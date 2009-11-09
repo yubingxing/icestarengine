@@ -1,6 +1,6 @@
 package com.demos.simple {
-	import com.ice.core.bullet.fLineBulletRenderer;
-	import com.ice.core.events.fShotEvent;
+	import com.ice.core.bullet.LineBulletRenderer;
+	import com.ice.core.events.ShotEvent;
 	import com.ice.core.objects.fCharacter;
 	
 	import flash.display.MovieClip;
@@ -30,7 +30,7 @@ package com.demos.simple {
 		public var character:fCharacter;
 		private var timeline:MovieClip;
 		private var keysDown:Object;
-		private var bulletRenderer:fLineBulletRenderer;
+		private var bulletRenderer:LineBulletRenderer;
 		private var gunS:Sound = new gunSound();
 		private var ricochetS:Sound = new ricochetSound();
 		
@@ -52,7 +52,7 @@ package com.demos.simple {
 		// Constructor
 		public function poncho(char:fCharacter,timeline:MovieClip):void {
 			
-			this.bulletRenderer = new fLineBulletRenderer(0xFFFFFF,2,0.5,"Ricochet","Blood","Ricochet")
+			this.bulletRenderer = new LineBulletRenderer(0xFFFFFF,2,0.5,"Ricochet","Blood","Ricochet")
 			
 			this.character = char
 			this.timeline = timeline
@@ -135,7 +135,7 @@ package com.demos.simple {
 		
 		
 		// Receives gunshots
-		private function shotListener(evt:fShotEvent):void {
+		private function shotListener(evt:ShotEvent):void {
 			evt.bullet.removeEventListener(fBullet.SHOT,this.shotListener)
 			this.ricochetS.play()
 		}

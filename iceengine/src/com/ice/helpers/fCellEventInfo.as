@@ -1,5 +1,5 @@
 package com.ice.helpers {
-	import com.ice.core.fScene;
+	import com.ice.core.Scene;
 	
 		// Imports
 
@@ -40,7 +40,7 @@ package com.ice.helpers {
 				/**
 				* Constructor
 				*/
-				function fCellEventInfo(xml:XML,scene:fScene):void {
+				function fCellEventInfo(xml:XML,scene:Scene):void {
 					
 					this.xml = xml
 					this.name = xml.@name[0].toString()
