@@ -1,4 +1,5 @@
 package com.ice.core.bullet {
+	import com.ice.core.interfaces.fEngineBulletRenderer;
 
 		// Imports
 		
