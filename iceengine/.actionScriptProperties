@@ -10,7 +10,9 @@
       </libraryPathEntry>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
     </libraryPath>
-    <sourceAttachmentPath/>
+    <sourceAttachmentPath>
+      <sourceAttachmentPathEntry kind="3" linkType="1" path="D:/OpenSource/flex-mmorpg-engine/trunk/iceengine/libs/as3ds.swc" sourcepath="D:/OpenSource/as3ds/trunk/src/de" useDefaultLinkType="false"/>
+    </sourceAttachmentPath>
   </compiler>
   <applications>
     <application path="iceengine.mxml"/>
