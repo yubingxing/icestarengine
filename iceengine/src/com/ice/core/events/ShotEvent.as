@@ -1,7 +1,7 @@
 package com.ice.core.events {
 	import com.ice.core.RenderableElement;
 	import com.ice.core.elements.Bullet;
-	import com.ice.util.ds.fPoint3d;
+	import com.ice.util.ds.Point3d;
 	
 	import flash.events.Event;
 	
@@ -26,7 +26,7 @@ package com.ice.core.events {
 		public var bullet:Bullet;
 		
 		/** Coordinate of impact, in scene coordinates */
-		public var coordinate:fPoint3d;
+		public var coordinate:Point3d;
 		
 		
 		/**
@@ -39,7 +39,7 @@ package com.ice.core.events {
 		 * @param victim The element of the scene that was shot.
 		 *
 		 */
-		function ShotEvent(type:String, bullet:Bullet, element:RenderableElement, coordinate:fPoint3d):void {
+		function ShotEvent(type:String, bullet:Bullet, element:RenderableElement, coordinate:Point3d):void {
 			super(type);
 			this.bullet = bullet;
 			this.element = element;
