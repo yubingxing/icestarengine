@@ -13,7 +13,7 @@ package test.demos.simple {
 	 This class controls the hero in our demo
 	 */	
 	/** @private */
-	public class poncho {
+	public class Poncho {
 		
 		// These are the Keys we use to move our character
 		public static var UP:int = 87;
@@ -50,7 +50,7 @@ package test.demos.simple {
 		public var vz:Number
 		
 		// Constructor
-		public function poncho(char:fCharacter,timeline:MovieClip):void {
+		public function Poncho(char:fCharacter,timeline:MovieClip):void {
 			
 			this.bulletRenderer = new LineBulletRenderer(0xFFFFFF,2,0.5,"Ricochet","Blood","Ricochet")
 			
@@ -117,7 +117,7 @@ package test.demos.simple {
 						dz/=dtotal
 						
 						var b:fBullet = this.character.scene.createBullet(this.character.x+60*dx,this.character.y+60*dy,gunZ,
-							poncho.bulletSpeed*dx,poncho.bulletSpeed*dy,poncho.bulletSpeed*dz,
+							Poncho.bulletSpeed*dx,Poncho.bulletSpeed*dy,Poncho.bulletSpeed*dz,
 							this.bulletRenderer)		
 						
 						b.addEventListener(fBullet.SHOT,this.shotListener)																								 
@@ -184,17 +184,17 @@ package test.demos.simple {
 			
 			switch(evt.keyCode) {
 				
-				case poncho.JUMP: this.jump(); break;
+				case Poncho.JUMP: this.jump(); break;
 				
-				case poncho.RUN: this.run(); break;
+				case Poncho.RUN: this.run(); break;
 				
-				case poncho.UP: this.walk(); break;
+				case Poncho.UP: this.walk(); break;
 				
-				case poncho.DOWN: this.walk(); break;
+				case Poncho.DOWN: this.walk(); break;
 				
-				case poncho.LEFT: this.walk(); break;
+				case Poncho.LEFT: this.walk(); break;
 				
-				case poncho.RIGHT: this.walk(); break;
+				case Poncho.RIGHT: this.walk(); break;
 				
 				
 			} 
@@ -209,15 +209,15 @@ package test.demos.simple {
 			
 			switch(evt.keyCode) {
 				
-				case poncho.RUN: this.stopRunning(); break;
+				case Poncho.RUN: this.stopRunning(); break;
 				
-				case poncho.UP: this.stopWalking(); break;
+				case Poncho.UP: this.stopWalking(); break;
 				
-				case poncho.RIGHT: this.stopWalking(); break;
+				case Poncho.RIGHT: this.stopWalking(); break;
 				
-				case poncho.LEFT: this.stopWalking(); break;
+				case Poncho.LEFT: this.stopWalking(); break;
 				
-				case poncho.DOWN: this.stopWalking(); break;
+				case Poncho.DOWN: this.stopWalking(); break;
 				
 			} 
 			
@@ -379,24 +379,24 @@ package test.demos.simple {
 		
 		public function stopWalking():void {
 			this.updateAngle()
-			if(this.keysDown[poncho.UP] == true || this.keysDown[poncho.DOWN] == true || this.keysDown[poncho.LEFT] == true || this.keysDown[poncho.RIGHT] == true) 
+			if(this.keysDown[Poncho.UP] == true || this.keysDown[Poncho.DOWN] == true || this.keysDown[Poncho.LEFT] == true || this.keysDown[Poncho.RIGHT] == true) 
 				return
 				this.walking = false
 			if(!this.rolling && !this.jumping) this.character.gotoAndPlay("Stand")
 		}
 		
 		private function updateAngle():void {
-			if(this.keysDown[poncho.UP] == true) {
-				if(this.keysDown[poncho.LEFT] == true) this.angle = 270
-				else if(this.keysDown[poncho.RIGHT] == true) this.angle = 0
+			if(this.keysDown[Poncho.UP] == true) {
+				if(this.keysDown[Poncho.LEFT] == true) this.angle = 270
+				else if(this.keysDown[Poncho.RIGHT] == true) this.angle = 0
 				else this.angle = 315
-			} else if(this.keysDown[poncho.DOWN] == true) {
-				if(this.keysDown[poncho.LEFT] == true) this.angle = 180
-				else if(this.keysDown[poncho.RIGHT] == true) this.angle = 90
+			} else if(this.keysDown[Poncho.DOWN] == true) {
+				if(this.keysDown[Poncho.LEFT] == true) this.angle = 180
+				else if(this.keysDown[Poncho.RIGHT] == true) this.angle = 90
 				else this.angle = 135
-			} else if(this.keysDown[poncho.RIGHT] == true) {
+			} else if(this.keysDown[Poncho.RIGHT] == true) {
 				this.angle = 45
-			}	else if(this.keysDown[poncho.LEFT] == true) {
+			}	else if(this.keysDown[Poncho.LEFT] == true) {
 				this.angle = 225
 			}
 			if(!this.rolling) this.character.orientation = this.angle

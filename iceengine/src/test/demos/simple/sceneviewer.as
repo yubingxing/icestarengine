@@ -10,7 +10,7 @@ package test.demos.simple {
 		public var container:Sprite
 		public var engine:fEngine	
 		public var scene:fScene
-		public var hero:poncho
+		public var hero:Poncho
 		public var scenes:Object
 		public var controllers:Object
 		public var cameras:Object
@@ -80,7 +80,7 @@ package test.demos.simple {
 				this.scene.setCamera(this.cameras[this.path])
 
 				// Create controller
-				this.controllers[this.path] = this.hero = new poncho(this.scene.all["Poncho"],this.timeline)
+				this.controllers[this.path] = this.hero = new Poncho(this.scene.all["Poncho"],this.timeline)
 				this.scene.all["Poncho"].addEventListener(fCharacter.EVENT_IN, this.INlistener)
 
 				// Activate
