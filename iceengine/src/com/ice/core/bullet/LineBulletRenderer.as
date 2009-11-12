@@ -57,7 +57,7 @@ package com.ice.core.bullet {
 		
 		/** @private */
 		public function init(bullet:Bullet):void {
-			bullet.customData.oldx = bullet.container.x;
+			bullet.customData.oldX = bullet.container.x;
 			bullet.customData.oldy = bullet.container.y;
 			bullet.container.graphics.clear();
 		}

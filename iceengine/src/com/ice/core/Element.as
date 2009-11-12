@@ -2,6 +2,10 @@
  * 基础对象类 
  */
 package com.ice.core {
+	import com.ice.core.events.MoveEvent;
+	import com.ice.core.interfaces.IElementController;
+	import com.ice.util.ds.Cell;
+	
 	import flash.events.EventDispatcher;
 	
 	// Imports
@@ -58,7 +62,7 @@ package com.ice.core {
 		 * A reference to the cell where the element currently is
 		 * @private
 		 */
-		public var cell:fCell;
+		public var cell:Cell;
 		
 		/**
 		 * A reference to the scene where this element belongs
@@ -96,15 +100,15 @@ package com.ice.core {
 		private var destz:Number;
 		
 		// This is the offset of this element, when following another element
-		private var offx:Number;	
-		private var offy:Number;
-		private var offz:Number;
+		private var _offx:Number;	
+		private var _offy:Number;
+		private var _offz:Number;
 		
 		// How fast we fall into the destination point
 		private var elasticity:Number;
 		
 		// Controller
-		private var _controller:fEngineElementController = null;
+		private var _controller:IElementController = null;
 		
 		
 		/*
@@ -114,6 +118,22 @@ package com.ice.core {
 		*
 		* @param scene: the scene where this element will be reated
 		*/
+		
+		public function get offx():Number
+		{
+			return _offx;
+		}
+		
+		public function get offy():Number
+		{
+			return _offy;
+		}
+		
+		public function get offz():Number
+		{
+			return _offz;
+		}
+		
 		function Element(defObj:XML,scene:Scene):void {
 			
 			// Id
@@ -121,8 +141,10 @@ package com.ice.core {
 			var temp:XMLList= defObj.@id;
 			
 			this.uniqueId = Element.count++;
-			if(temp.length()==1) this.id = temp.toString();
-			else this.id = "fElement_"+this.uniqueId;
+			if(temp.length()==1) 
+				this.id = temp.toString();
+			else 
+				this.id = "fElement_"+this.uniqueId;
 			
 			// Reference to container scene
 			this.scene = scene;
@@ -144,21 +166,21 @@ package com.ice.core {
 		
 		/**
 		 * Assigns a controller to this element
-		 * @param controller: any controller class that implements the fEngineElementController interface
+		 * @param controller: any controller class that implements the IElementController interface
 		 */
-		public function set controller(controller:fEngineElementController):void {
-			
-			if(this._controller!=null) this._controller.disable();
+		public function set controller(controller:IElementController):void {
+			if(this._controller!=null) 
+				this._controller.disable();
 			this._controller = controller;
-			if(this._controller) this._controller.assignElement(this);
-			
+			if(this._controller) 
+				this._controller.assignElement(this);
 		}
 		
 		/**
 		 * Retrieves controller from this element
 		 * @return controller: the class that is currently controlling the the fElement
 		 */
-		public function get controller():fEngineElementController {
+		public function get controller():IElementController {
 			return this._controller;
 		}
 		
@@ -186,14 +208,13 @@ package com.ice.core {
 			this.z = z;
 			
 			// Check if element moved into a different cell
-			var cell:fCell = this.scene.translateToCell(x,y,z);
-			if(this.cell == null || cell==null || cell!=this.cell) {
-				
+			var cell:Cell = this.scene.translateToCell(x, y, z);
+			if(this.cell == null || cell == null || cell != this.cell) {
 				this.cell = cell;
 				dispatchEvent(new Event(Element.NEWCELL));
 			}
 			// Dispatch event
-			this.dispatchEvent(new fMoveEvent(Element.MOVE,this.x-dx,this.y-dy,this.z-dz));
+			this.dispatchEvent(new MoveEvent(Element.MOVE,this.x-dx,this.y-dy,this.z-dz));
 		}
 		
 		
@@ -205,12 +226,12 @@ package com.ice.core {
 		 * @param elasticity: How strong is the element attached to what is following. 0 Means a solid bind. The bigger the number, the looser the bind.
 		 *
 		 */
-		public function follow(target:Element,elasticity:Number=0):void {
-			this.offx = target.x-this.x;
-			this.offy = target.y-this.y;	
-			this.offz = target.z-this.z;
+		public function follow(target:Element, elasticity:Number=0):void {
+			this._offx = target.x-this.x;
+			this._offy = target.y-this.y;	
+			this._offz = target.z-this.z;
 			this.elasticity = 1+elasticity;
-			target.addEventListener(Element.MOVE,this.moveListener,false,0,true);
+			target.addEventListener(Element.MOVE, this.moveListener, false, 0, true);
 		}
 		
 		/**
@@ -220,19 +241,19 @@ package com.ice.core {
 		 *
 		 */
 		public function stopFollowing(target:Element):void {
-			target.removeEventListener(Element.MOVE,this.moveListener);
+			target.removeEventListener(Element.MOVE, this.moveListener);
 		}
 		
 		// Listens for another element's movements
 		/** @private */
 		public function moveListener(evt:fMoveEvent):void {
 			if(this.elasticity == 1) 
-				this.moveTo(evt.target.x-this.offx,evt.target.y-this.offy,evt.target.z-this.offz);
+				this.moveTo(evt.target.x - this._offx, evt.target.y - this._offy, evt.target.z - this._offz);
 			else {
-				this.destx = evt.target.x-this.offx;
-				this.desty = evt.target.y-this.offy;
-				this.destz = evt.target.z-this.offz;
-				Engine.stage.addEventListener('enterFrame',this.followListener,false,0,true);
+				this.destx = evt.target.x - this._offx;
+				this.desty = evt.target.y - this._offy;
+				this.destz = evt.target.z - this._offz;
+				Engine.stage.addEventListener('enterFrame', this.followListener, false, 0, true);
 			}
 		}
 		
@@ -240,18 +261,16 @@ package com.ice.core {
 		 * @private
 		 */
 		public function followListener(evt:Event) {
-			
-			var dx:Number = this.destx-this.x;
-			var dy:Number = this.desty-this.y;		
-			var dz:Number = this.destz-this.z;
+			var dx:Number = this.destx - this.x;
+			var dy:Number = this.desty - this.y;		
+			var dz:Number = this.destz - this.z;
 			try {
-				this.moveTo(this.x+dx/this.elasticity,this.y+dy/this.elasticity,this.z+dz/this.elasticity);
+				this.moveTo(this.x + dx / this.elasticity, this.y + dy / this.elasticity, this.z + dz / this.elasticity);
 			} catch(e:Error) {
 			}
 			
 			// Stop ?
-			
-			if(dx<1 && dx>-1 && dy<1 && dy>-1 && dz<1 && dz>-1) {
+			if(dx < 1 && dx > -1 && dy < 1 && dy > -1 && dz < 1 && dz > -1) {
 				Engine.stage.removeEventListener('enterFrame',this.followListener);
 			}
 		} 
@@ -262,8 +281,8 @@ package com.ice.core {
 		 *
 		 * @return distance
 		 */
-		public function distanceTo(x:Number,y:Number,z:Number):Number {
-			return mathUtils.distance3d(x,y,z,this.x,this.y,this.z);
+		public function distanceTo(x:Number, y:Number, z:Number):Number {
+			return mathUtils.distance3d(x, y, z, this.x, this.y, this.z);
 		}
 		
 		// Clean resources
@@ -275,7 +294,7 @@ package com.ice.core {
 			this.scene = null;
 			this._controller = null;
 			if(Engine.stage) 
-				Engine.stage.removeEventListener('enterFrame',this.followListener);
+				Engine.stage.removeEventListener('enterFrame', this.followListener);
 		}
 		
 		/** @private */
