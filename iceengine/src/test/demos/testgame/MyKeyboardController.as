@@ -1,23 +1,13 @@
 package test.demos.testgame {
+	import com.ice.core.interfaces.IElementController;
 
 	// Imports
-	import flash.display.*
-	import flash.events.*
-	import flash.media.*
-	import flash.ui.Keyboard
-	import org.ffilmation.utils.*
-	import org.ffilmation.engine.core.*
-	import org.ffilmation.engine.elements.*
-	import org.ffilmation.engine.datatypes.*
-	import org.ffilmation.engine.events.*
-	import org.ffilmation.engine.interfaces.*
-	import org.ffilmation.engine.bulletRenderers.*
 
 	/** 
 	* This is a sample of a character controller that listens to keyboard events
 	* @private
 	*/
-	public class MyKeyboardController implements fEngineElementController {
+	public class MyKeyboardController implements IElementController {
 		
 		// These are the Keys we use to move our character
 		public static var UP:int = 87

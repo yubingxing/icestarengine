@@ -19,7 +19,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package de.polygonal.ds
+package com.game.ds
 {
 	/**
 	 * A heap is a special kind of binary tree in which every node is greater
@@ -270,8 +270,8 @@ package de.polygonal.ds
 	}
 }
 
-import de.polygonal.ds.Heap;
-import de.polygonal.ds.Iterator;
+import com.game.ds.Iterator;
+import com.game.ds.Heap;
 
 internal class HeapIterator implements Iterator
 {

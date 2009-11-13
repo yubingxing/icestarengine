@@ -19,9 +19,10 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package de.polygonal.ds.sort 
+package com.game.ds.sort
 {
-	import de.polygonal.ds.SListNode;	
+	import com.game.ds.SListNode;
+
 	public function sLinkedMergeSort(node:SListNode, descending:Boolean = false):SListNode
 	{
 		if (!node) return null;

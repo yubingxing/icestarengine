@@ -19,7 +19,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package de.polygonal.ds
+package com.game.ds
 {
 	/**
 	 * A linked uni-directional weighted graph structure.
@@ -344,9 +344,9 @@ package de.polygonal.ds
 	}
 }
 
-import de.polygonal.ds.Graph;
-import de.polygonal.ds.GraphNode;
-import de.polygonal.ds.Iterator;
+import com.game.ds.Iterator;
+import com.game.ds.Graph;
+import com.game.ds.GraphNode;
 
 internal class GraphIterator implements Iterator
 {

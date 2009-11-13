@@ -1,21 +1,13 @@
 package test.demos.testgame {
+	import com.ice.core.interfaces.IElementController;
 
 	// Imports
-	import flash.display.*
-	import flash.events.*
-	import flash.ui.Keyboard
-	import org.ffilmation.utils.*
-	import org.ffilmation.engine.core.*
-	import org.ffilmation.engine.datatypes.*
-	import org.ffilmation.engine.elements.*
-	import org.ffilmation.engine.events.*
-	import org.ffilmation.engine.interfaces.*
 
 	/** 
 	* This is a sample of a character controller that listens to mouse events
 	* @private
 	*/
-	public class MyMouseController implements fEngineElementController {
+	public class MyMouseController implements IElementController {
 	
 		// Properties
 		public var character:fCharacter

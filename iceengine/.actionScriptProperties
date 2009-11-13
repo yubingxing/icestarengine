@@ -8,7 +8,6 @@
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
         </excludedEntries>
       </libraryPathEntry>
-      <libraryPathEntry kind="3" linkType="1" path="/as3ds/bin/as3ds.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/as3_game_ds/bin/as3_game_ds.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>

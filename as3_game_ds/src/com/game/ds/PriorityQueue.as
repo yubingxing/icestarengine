@@ -19,7 +19,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package de.polygonal.ds
+package com.game.ds
 {
 	import flash.utils.Dictionary;	
 
@@ -297,8 +297,8 @@ package de.polygonal.ds
     }
 }
 
-import de.polygonal.ds.Iterator;
-import de.polygonal.ds.PriorityQueue;
+import com.game.ds.Iterator;
+import com.game.ds.PriorityQueue;
 
 internal class PriorityQueueIterator implements Iterator
 {

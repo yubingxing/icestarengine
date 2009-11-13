@@ -86,20 +86,20 @@ package com.ice.profiler
 		
 				// sign and name
 				tmp = sign + " " + node.getName();
-				out += fProfiler.sprintf( "%-" + ProfilerConfig.TreeColumnWidthChr + "s", tmp );
+				out += Profiler.sprintf( "%-" + ProfilerConfig.TreeColumnWidthChr + "s", tmp );
 
 				// calls
-				tmp = fProfiler.sprintf( "%d", stats.calls );
-				out += fProfiler.sprintf( "%-8s", tmp );
+				tmp = Profiler.sprintf( "%d", stats.calls );
+				out += Profiler.sprintf( "%-8s", tmp );
 
 				// time average (ms)
-				if( stats.calls ) tmp = fProfiler.sprintf( "%3.2fms", Number( stats.totalTime ) / Number( stats.calls ) );
+				if( stats.calls ) tmp = Profiler.sprintf( "%3.2fms", Number( stats.totalTime ) / Number( stats.calls ) );
 				else tmp = "0.00ms";
-				out += fProfiler.sprintf( "%-12s", tmp );
+				out += Profiler.sprintf( "%-12s", tmp );
 
 				// percentage
-				tmp = fProfiler.sprintf( "%3.2f%%", stats.percentage );
-				out += fProfiler.sprintf( "%-12s", tmp );
+				tmp = Profiler.sprintf( "%3.2f%%", stats.percentage );
+				out += Profiler.sprintf( "%-12s", tmp );
 
 				tf.text = out;
 			}

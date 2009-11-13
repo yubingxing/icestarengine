@@ -25,6 +25,7 @@
 
 package com.ice.profiler
 {
+	import flash.display.Sprite;
 
 	/**
 	 * Provides a simple mechanism to compute average, minimum and maximum
@@ -34,7 +35,7 @@ package com.ice.profiler
 	 * the same logical block by defining the parent node as a group node.
 	 * <p>I took it from <a href="http://manuel.bit-fire.com/2007/10/17/an-as3-profiler/" target="_blank">here</a>. Credit goes to Manuel Bua. Check the link for instructions on how to use it.</p>
 	 */
-	public class fProfiler extends Sprite
+	public class Profiler extends Sprite
 	{
 		private var nodes: Array = new Array();
 		private var currNode: ProfileNode;
@@ -55,7 +56,7 @@ package com.ice.profiler
 		/**
 		* Constructor
 		*/
-		public function fProfiler( groupColorMode: Boolean = true ) {
+		public function Profiler( groupColorMode: Boolean = true ) {
 			gcm = groupColorMode
 			frameCount = 0;
 
@@ -227,7 +228,7 @@ package com.ice.profiler
 
 			headerText.x = 4;
 			headerText.y = 2;
-			headerText.text = fProfiler.sprintf( "%-" + ProfilerConfig.TreeColumnWidthChr + "s%-8s%-12s%-12s", "PROFILED TREE", "CALLS", "TIME SPENT", "PERCENTAGE" );
+			headerText.text = Profiler.sprintf( "%-" + ProfilerConfig.TreeColumnWidthChr + "s%-8s%-12s%-12s", "PROFILED TREE", "CALLS", "TIME SPENT", "PERCENTAGE" );
 
 			// reset items y-offset
 			currY.value = ProfilerConfig.FirstItemPxFromTop;
@@ -347,7 +348,7 @@ package com.ice.profiler
 						str = String(Math.abs(int(next)));
 		
 						if (precision != "")
-							str = fProfiler.leftPad(str, int(precision), "0");
+							str = Profiler.leftPad(str, int(precision), "0");
 		
 						if (int(next) < 0)
 							str = "-" + str;
@@ -357,11 +358,11 @@ package com.ice.profiler
 						if (fieldWidth != "")
 						{
 							if (flagLeftJustify)
-								str = fProfiler.rightPad(str, int(fieldWidth));
+								str = Profiler.rightPad(str, int(fieldWidth));
 							else if (flagZeroPad && precision == "")
-								str = fProfiler.leftPad(str, int(fieldWidth), "0");
+								str = Profiler.leftPad(str, int(fieldWidth), "0");
 							else
-								str = fProfiler.leftPad(str, int(fieldWidth));
+								str = Profiler.leftPad(str, int(fieldWidth));
 						}
 		
 						result += str;
@@ -375,16 +376,16 @@ package com.ice.profiler
 							str = "0" + str;
 		
 						if (precision != "")
-							str = fProfiler.leftPad(str, int(precision), "0");
+							str = Profiler.leftPad(str, int(precision), "0");
 		
 						if (fieldWidth != "")
 						{
 							if (flagLeftJustify)
-								str = fProfiler.rightPad(str, int(fieldWidth));
+								str = Profiler.rightPad(str, int(fieldWidth));
 							else if (flagZeroPad && precision == "")
-								str = fProfiler.leftPad(str, int(fieldWidth), "0");
+								str = Profiler.leftPad(str, int(fieldWidth), "0");
 							else
-								str = fProfiler.leftPad(str, int(fieldWidth));
+								str = Profiler.leftPad(str, int(fieldWidth));
 						}
 		
 						result += str;
@@ -395,16 +396,16 @@ package com.ice.profiler
 						str = uint(next).toString(10);
 		
 						if (precision != "")
-							str = fProfiler.leftPad(str, int(precision), "0");
+							str = Profiler.leftPad(str, int(precision), "0");
 		
 						if (fieldWidth != "")
 						{
 							if (flagLeftJustify)
-								str = fProfiler.rightPad(str, int(fieldWidth));
+								str = Profiler.rightPad(str, int(fieldWidth));
 							else if (flagZeroPad && precision == "")
-								str = fProfiler.leftPad(str, int(fieldWidth), "0");
+								str = Profiler.leftPad(str, int(fieldWidth), "0");
 							else
-								str = fProfiler.leftPad(str, int(fieldWidth));
+								str = Profiler.leftPad(str, int(fieldWidth));
 						}
 		
 						result += str;
@@ -417,13 +418,13 @@ package com.ice.profiler
 						str = uint(next).toString(16);
 		
 						if (precision != "")
-							str = fProfiler.leftPad(str, int(precision), "0");
+							str = Profiler.leftPad(str, int(precision), "0");
 		
 						var prepend:Boolean = flagAlternateForm && uint(next) != 0;
 		
 						if (fieldWidth != "" && !flagLeftJustify
 								&& flagZeroPad && precision == "")
-							str = fProfiler.leftPad(str, prepend
+							str = Profiler.leftPad(str, prepend
 									? int(fieldWidth) - 2 : int(fieldWidth), "0");
 		
 						if (prepend)
@@ -432,9 +433,9 @@ package com.ice.profiler
 						if (fieldWidth != "")
 						{
 							if (flagLeftJustify)
-								str = fProfiler.rightPad(str, int(fieldWidth));
+								str = Profiler.rightPad(str, int(fieldWidth));
 							else
-								str = fProfiler.leftPad(str, int(fieldWidth));
+								str = Profiler.leftPad(str, int(fieldWidth));
 						}
 		
 						if (capitalise)
@@ -459,11 +460,11 @@ package com.ice.profiler
 						if (fieldWidth != "")
 						{
 							if (flagLeftJustify)
-								str = fProfiler.rightPad(str, int(fieldWidth));
+								str = Profiler.rightPad(str, int(fieldWidth));
 							else if (flagZeroPad && precision == "")
-								str = fProfiler.leftPad(str, int(fieldWidth), "0");
+								str = Profiler.leftPad(str, int(fieldWidth), "0");
 							else
-								str = fProfiler.leftPad(str, int(fieldWidth));
+								str = Profiler.leftPad(str, int(fieldWidth));
 						}
 		
 						result += str;
@@ -476,9 +477,9 @@ package com.ice.profiler
 						if (fieldWidth != "")
 						{
 							if (flagLeftJustify)
-								str = fProfiler.rightPad(str, int(fieldWidth));
+								str = Profiler.rightPad(str, int(fieldWidth));
 							else
-								str = fProfiler.leftPad(str, int(fieldWidth));
+								str = Profiler.leftPad(str, int(fieldWidth));
 						}
 		
 						result += str;
@@ -494,9 +495,9 @@ package com.ice.profiler
 						if (fieldWidth != "")
 						{
 							if (flagLeftJustify)
-								str = fProfiler.rightPad(str, int(fieldWidth));
+								str = Profiler.rightPad(str, int(fieldWidth));
 							else
-								str = fProfiler.leftPad(str, int(fieldWidth));
+								str = Profiler.leftPad(str, int(fieldWidth));
 						}
 		
 						result += str;

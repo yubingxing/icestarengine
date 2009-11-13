@@ -19,7 +19,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package de.polygonal.ds
+package com.game.ds
 {
 	/**
 	 * An arrayed stack.
@@ -197,8 +197,8 @@ package de.polygonal.ds
 	}
 }
 
-import de.polygonal.ds.ArrayedStack;
-import de.polygonal.ds.Iterator;
+import com.game.ds.Iterator;
+import com.game.ds.ArrayedStack;
 
 internal class ArrayedStackIterator implements Iterator
 {
