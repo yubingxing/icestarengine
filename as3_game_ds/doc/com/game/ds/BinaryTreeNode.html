@@ -1,0 +1,491 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../print.css" type="text/css" media="print">
+<meta content="BinaryTreeNode,de.polygonal.ds.BinaryTreeNode,data,left,parent,right,count,destroy,getDepth,inorder,isLeft,isRight,postorder,preorder,setLeft,setRight,toString" name="keywords">
+<title>de.polygonal.ds.BinaryTreeNode</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'BinaryTreeNode - AS3 Data Structures For Game Developers';
+				var baseRef = '../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">AS3 Data Structures For Game Developers v1.04</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../all-classes.html')" href="../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../all-classes.html')" href="../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../index-list.html')" href="../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../index.html?de/polygonal/ds/BinaryTreeNode.html&amp;de/polygonal/ds/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;BinaryTreeNode</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#propertySummary">Properties</a>&nbsp;| <a href="#methodSummary">Methods</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class BinaryTreeNode"); titleBar_setSubNav(false,true,false,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">de.polygonal.ds</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class BinaryTreeNode</td>
+</tr>
+</table>
+<p></p>
+  A binary tree node from which you can build a binary tree.
+  
+  A Binary Tree is a simplified tree structure in which every node is only
+  allowed to have up to two children nodes, which are called the left and
+  right child.
+  <p></p>
+<br>
+<hr>
+</div>
+<a name="propertySummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Properties</div>
+<table id="summaryTableProperty" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Property</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#data">data</a> : *<div class="summaryTableDescription">
+   The node's data.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#left">left</a> : <a href="../ds/BinaryTreeNode.html">BinaryTreeNode</a>
+<div class="summaryTableDescription">
+   The left child node being referenced.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#parent">parent</a> : <a href="../ds/BinaryTreeNode.html">BinaryTreeNode</a>
+<div class="summaryTableDescription">
+   The parent node being referenced.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#right">right</a> : <a href="../ds/BinaryTreeNode.html">BinaryTreeNode</a>
+<div class="summaryTableDescription">
+   The right child node being referenced.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+</table>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#BinaryTreeNode()">BinaryTreeNode</a>(obj:*)</div>
+<div class="summaryTableDescription">
+   Creates an empty node.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#count()">count</a>():int</div>
+<div class="summaryTableDescription">
+   Recursively counts the total number of nodes including this node.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#destroy()">destroy</a>():void</div>
+<div class="summaryTableDescription">
+   Recursively clears the tree by deleting all child nodes underneath
+   the node the method is called on.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#getDepth()">getDepth</a>(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a> = null):int</div>
+<div class="summaryTableDescription">
+   Computes the depth of a tree.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#inorder()">inorder</a>(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a>, process:Function):void</div>
+<div class="summaryTableDescription">[static]
+   Performs an <i>inorder traversal</i> on a tree.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#isLeft()">isLeft</a>():Boolean</div>
+<div class="summaryTableDescription">
+   Checks if the node is a left node relative to its parent node.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#isRight()">isRight</a>():Boolean</div>
+<div class="summaryTableDescription">
+   Checks if the node is a right node relative to its parent node.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#postorder()">postorder</a>(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a>, process:Function):void</div>
+<div class="summaryTableDescription">[static]
+   Performs a <i>postorder traversal</i> on a tree.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#preorder()">preorder</a>(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a>, process:Function):void</div>
+<div class="summaryTableDescription">[static]
+   Performs a <i>preorder traversal</i> on a tree.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#setLeft()">setLeft</a>(obj:*):void</div>
+<div class="summaryTableDescription">
+   Writes data into the left child.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#setRight()">setRight</a>(obj:*):void</div>
+<div class="summaryTableDescription">
+   Writes data into the right child.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#toString()">toString</a>():String</div>
+<div class="summaryTableDescription">
+   Prints out a string representing the current object.</div>
+</td><td class="summaryTableOwnerCol">BinaryTreeNode</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="propertyDetail"></a>
+<div class="detailSectionHeader">Property detail</div>
+<a name="data"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">data</td><td class="detailHeaderType">property</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public var data:*</code><p>
+   The node's data.
+   </p></div>
+<a name="left"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">left</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public var left:<a href="../ds/BinaryTreeNode.html">BinaryTreeNode</a></code><p>
+   The left child node being referenced.
+   </p></div>
+<a name="parent"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">parent</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public var parent:<a href="../ds/BinaryTreeNode.html">BinaryTreeNode</a></code><p>
+   The parent node being referenced.
+   </p></div>
+<a name="right"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">right</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public var right:<a href="../ds/BinaryTreeNode.html">BinaryTreeNode</a></code><p>
+   The right child node being referenced.
+   </p></div>
+<a name="constructorDetail"></a>
+<div class="detailSectionHeader">Constructor detail</div>
+<a name="BinaryTreeNode()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">BinaryTreeNode</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">constructor</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function BinaryTreeNode(obj:*)</code><p>
+   Creates an empty node.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">obj</span>:*</code> &mdash; The node's data.
+   </td>
+</tr>
+</table>
+</div>
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="count()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">count</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function count():int</code><p>
+   Recursively counts the total number of nodes including this node.
+   </p><p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>int</code></td>
+</tr>
+</table>
+</div>
+<a name="destroy()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">destroy</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function destroy():void</code><p>
+   Recursively clears the tree by deleting all child nodes underneath
+   the node the method is called on.
+   </p></div>
+<a name="getDepth()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">getDepth</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function getDepth(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a> = null):int</code><p>
+   Computes the depth of a tree.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">node</span>:<a href="BinaryTreeNode.html">BinaryTreeNode</a></code> (default = <code>null</code>)<code></code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>int</code> &mdash; The depth of the tree.
+   </td>
+</tr>
+</table>
+</div>
+<a name="inorder()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">inorder</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function inorder(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a>, process:Function):void</code><p>
+   Performs an <i>inorder traversal</i> on a tree.
+   This processes the current node in between the child nodes.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">node</span>:<a href="BinaryTreeNode.html">BinaryTreeNode</a></code> &mdash;    The node to start from.
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">process</span>:Function</code> &mdash; A process function applied to each traversed node.
+   </td>
+</tr>
+</table>
+</div>
+<a name="isLeft()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">isLeft</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function isLeft():Boolean</code><p>
+   Checks if the node is a left node relative to its parent node.
+   
+   </p><p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Boolean</code> &mdash; True if this node is left, otherwise false.
+   </td>
+</tr>
+</table>
+</div>
+<a name="isRight()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">isRight</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function isRight():Boolean</code><p>
+   Checks if the node is a right node relative to its parent node.
+   
+   </p><p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Boolean</code> &mdash; True if this node is right, otherwise false.
+   </td>
+</tr>
+</table>
+</div>
+<a name="postorder()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">postorder</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function postorder(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a>, process:Function):void</code><p>
+   Performs a <i>postorder traversal</i> on a tree.
+   This processes the current node after its children.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">node</span>:<a href="BinaryTreeNode.html">BinaryTreeNode</a></code> &mdash;    The node to start from.
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">process</span>:Function</code> &mdash; A process function applied to each traversed node.
+   </td>
+</tr>
+</table>
+</div>
+<a name="preorder()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">preorder</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function preorder(node:<a href="BinaryTreeNode.html">BinaryTreeNode</a>, process:Function):void</code><p>
+   Performs a <i>preorder traversal</i> on a tree.
+   This processes the current tree node before its children.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">node</span>:<a href="BinaryTreeNode.html">BinaryTreeNode</a></code> &mdash;    The node to start from.
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">process</span>:Function</code> &mdash; A process function applied to each traversed node.
+   </td>
+</tr>
+</table>
+</div>
+<a name="setLeft()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">setLeft</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function setLeft(obj:*):void</code><p>
+   Writes data into the left child.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">obj</span>:*</code> &mdash; The data.
+   </td>
+</tr>
+</table>
+</div>
+<a name="setRight()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">setRight</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function setRight(obj:*):void</code><p>
+   Writes data into the right child.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">obj</span>:*</code> &mdash; The data.
+   </td>
+</tr>
+</table>
+</div>
+<a name="toString()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">toString</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function toString():String</code><p>
+   Prints out a string representing the current object.
+   
+   </p><p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>String</code> &mdash; A string representing the current object.
+   </td>
+</tr>
+</table>
+</div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright">Copyright 2007-2008 Michael Baczynski | POLYGONAL</center>
+</div>
+</body>
+</html>
+<!--Copyright 2007-2008 Michael Baczynski | POLYGONAL-->
