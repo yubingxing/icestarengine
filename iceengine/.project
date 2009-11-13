@@ -3,6 +3,7 @@
 	<name>iceengine</name>
 	<comment></comment>
 	<projects>
+		<project>as3ds</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -12,7 +13,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>com.adobe.flexbuilder.project.flexnature</nature>
+		<nature>com.adobe.flexbuilder.project.flexlibnature</nature>
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
 	</natures>
 </projectDescription>
