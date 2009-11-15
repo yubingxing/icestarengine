@@ -1,7 +1,9 @@
 package com.ice.core.base {
+	// Imports
 	import com.ice.core.interfaces.IRenderEngine;
 	import com.ice.core.interfaces.ISceneRetriever;
 	import com.ice.profiler.Profiler;
+	import com.ice.util.ObjectPool;
 	
 	import flash.display.Loader;
 	import flash.display.Sprite;
@@ -12,18 +14,18 @@ package com.ice.core.base {
 	import flash.events.ProgressEvent;
 	import flash.net.URLLoader;
 	import flash.system.ApplicationDomain;
+	import flash.system.LoaderContext;
 	
-	// Imports
 	
 	
 	/**
 	 * <p>The Engine class is the main class in the game engine.</p>
 	 *
-	 * <p>Use the Engine class to create and attach game scenes to your game.</p>
+	 * <p>Use the Engine class to create and attach game _scenes to your game.</p>
 	 *
-	 * <p>You can also use it to load external swfs containing media you want to add to you scenes.</p>
+	 * <p>You can also use it to load external swfs containing media you want to add to you _scenes.</p>
 	 *
-	 * <p>Once the scenes are created you can go from one to another using the methods in
+	 * <p>Once the _scenes are created you can go from one to another using the methods in
 	 * the Engine class. The class handles all the drawing and screen refreshing.</p>
 	 *
 	 * @example The following code sets a basic isometric application with one scene
@@ -78,7 +80,7 @@ package com.ice.core.base {
 		public static const DEFORMATION:Number = 0.7906;
 		
 		/**
-		 * To simplify sorting huge scenes, the scene is split into cubes of a given size. Elements are sorted only within the cubes and the cubes are
+		 * To simplify sorting huge _scenes, the scene is split into cubes of a given size. Elements are sorted only within the cubes and the cubes are
 		 * sorted withinm themselves. Planes should't extend across cubes. The engine will split planes that cross cube bounds.
 		 * This is the default cube size ( in pixels ) you can change it in a per Scene basis using the <b>cubeSize</b> attribute of your main <scene> node.
 		 * <p>Also in future versions these self-containing cubes will be used to implement dynamic streaming of scene geometry.</p>
@@ -147,7 +149,7 @@ package com.ice.core.base {
 		
 		/**
 		 * When this flag in activated, the engine minimizes memory usage at the cost of some performance. You can
-		 * change it on the fly, for example if you are swithcing between small scenes and big ones.
+		 * change it on the fly, for example if you are swithcing between small _scenes and big ones.
 		 * Still WIP. Don't use yet !!
 		 * @private
 		 */
@@ -177,24 +179,24 @@ package com.ice.core.base {
 		private static var _bumpMapping:Boolean = false;
 		
 		// Static private
-		private static var engines:Array = [];
-		// All engines
+		private static var _engines:Array = [];
+		// All _engines
 		
 		
-		private static var media:Array = [];
+		private static var _media:Array = [];
 		// List of media files that have already been loaded
-		// Static so it wotks with several engines ( eventhought I can't think of an scenario where you
+		// Static so it wotks with several _engines ( eventhought I can't think of an scenario where you
 		// would want more than one engine
 		
 		// Private
-		public var container:Sprite;    		// Main moviecontainer
-		private var scenes:Array;           // List of scenes
+		private var _scenes:Array;           // List of _scenes
 		
-		/** Scene being currently displayed */
-		public var current:Scene;				
+		/** Scene being currentScenely displayed */
+		public var currentScene:Scene;				
+		public var container:Sprite;    		// Main moviecontainer
 		
 		/** @private */
-		public static var context:LoaderContext = new LoaderContext(false, ApplicationDomain.currentDomain)
+		public static var context:LoaderContext = new LoaderContext(false, ApplicationDomain.currentDomain);
 		
 		
 		// Constructor
@@ -206,27 +208,26 @@ package com.ice.core.base {
 		 */
 		function Engine(container:Sprite):void {
 			
-			this.container = container;
-			this.scenes	= [];
-			this.current = null;
+			container = container;
+			_scenes	= [];
+			currentScene = null;
 			
 			// Arrg dirty trick !! So I have access to onenterframe events from anywhere in the engine
 			if(!Engine.stage) {
-				if(container.stage)	Engine.stage = container.stage;
-				else container.addEventListener(Event.ADDED_TO_STAGE, this.getStage);
+				if(container.stage)
+					Engine.stage = container.stage;
+				else 
+					container.addEventListener(Event.ADDED_TO_STAGE, _getStage);
 			}
-			
-			
-			// Add engine to list of all engines
-			Engine.engines[Engine.engines.length] = this;
-			
+			// Add engine to list of all _engines
+			_engines[_engines.length] = this;
 		}
 		
 		// Retrieves stage
-		private function getStage(e:Event):void {
+		private function _getStage(e:Event):void {
 			var s:Sprite = Sprite(e.target);
 			Engine.stage = s.stage;
-			s.removeEventListener(Event.ADDED_TO_STAGE, this.getStage);
+			s.removeEventListener(Event.ADDED_TO_STAGE, _getStage);
 		}
 		
 		/**
@@ -243,50 +244,50 @@ package com.ice.core.base {
 		 */
 		public function loadMedia(src:String) {
 			
-			if(Engine.media[src]==null) {
+			if(_media[src] == null) {
 				
 				// This file is not loaded
-				Engine.media[src] = true;
+				_media[src] = true;
 				
 				// Using loadBytes allows the adobe AIR editor to import loaded swfs into its security domain
-				if(Capabilities.playerType=="Desktop") {
+				if(Capabilities.playerType == "Desktop") {
 					var urlLoader:URLLoader = new URLLoader();
 					urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
-					urlLoader.addEventListener(Event.COMPLETE, this.loadBytesComplete, false, 0, true);
-					urlLoader.addEventListener(ProgressEvent.PROGRESS, this.loadBytesProgress, false, 0, true);
-					urlLoader.addEventListener(IOErrorEvent.IO_ERROR, this.loadBytesError, false, 0, true);
+					urlLoader.addEventListener(Event.COMPLETE, _loadBytesComplete, false, 0, true);
+					urlLoader.addEventListener(ProgressEvent.PROGRESS, _loadBytesProgress, false, 0, true);
+					urlLoader.addEventListener(IOErrorEvent.IO_ERROR, _loadBytesError, false, 0, true);
 					urlLoader.load(new URLRequest(src));
 				} else {
 					var cLoader:Loader = new Loader();
-					cLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, this.loadComplete, false, 0, true);
-					cLoader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, this.loadProgress, false, 0, true);
-					cLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, this.loadError, false, 0, true);
+					cLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, _loadComplete, false, 0, true);
+					cLoader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, _loadProgress, false, 0, true);
+					cLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, _loadError, false, 0, true);
 					cLoader.load(new URLRequest(src), Engine.context);
 				}
 			} else {
 				// Already loaded
-				this.dispatchEvent(new Event(Engine.MEDIALOADCOMPLETE));
+				dispatchEvent(new Event(Engine.MEDIALOADCOMPLETE));
 			}
 		}
 		
 		// Using loadBytes allows the adobe AIR editor to import loaed swfs into its security domain
-		private function loadBytesError(event:IOErrorEvent):void {
-			event.target.removeEventListener(Event.COMPLETE, this.loadBytesComplete);
-			event.target.removeEventListener(ProgressEvent.PROGRESS, this.loadBytesProgress);
-			event.target.removeEventListener(IOErrorEvent.IO_ERROR , this.loadBytesError);
-			this.dispatchEvent(new Event(Engine.MEDIALOADERROR));
+		private function _loadBytesError(event:IOErrorEvent):void {
+			event.target.removeEventListener(Event.COMPLETE, _loadBytesComplete);
+			event.target.removeEventListener(ProgressEvent.PROGRESS, _loadBytesProgress);
+			event.target.removeEventListener(IOErrorEvent.IO_ERROR , _loadBytesError);
+			dispatchEvent(new Event(Engine.MEDIALOADERROR));
 		}
 		
-		private function loadBytesComplete(event:Event):void {
-			event.target.removeEventListener(Event.COMPLETE, this.loadBytesComplete);
-			event.target.removeEventListener(ProgressEvent.PROGRESS, this.loadBytesProgress);
-			event.target.removeEventListener(IOErrorEvent.IO_ERROR , this.loadBytesError);
+		private function _loadBytesComplete(event:Event):void {
+			event.target.removeEventListener(Event.COMPLETE, _loadBytesComplete);
+			event.target.removeEventListener(ProgressEvent.PROGRESS, _loadBytesProgress);
+			event.target.removeEventListener(IOErrorEvent.IO_ERROR , _loadBytesError);
 			var cLoader:Loader = new Loader();
-			cLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, this.loadComplete, false, 0, true);
-			cLoader.loadBytes(event.target.data,Engine.context);
+			cLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, _loadComplete, false, 0, true);
+			cLoader.loadBytes(event.target.data, Engine.context);
 		}
 		
-		private function loadBytesProgress(event:ProgressEvent):void {
+		private function _loadBytesProgress(event:ProgressEvent):void {
 			var ret:ProgressEvent = new ProgressEvent(Engine.MEDIALOADPROGRESS);
 			ret.bytesLoaded = event.bytesLoaded;
 			ret.bytesTotal = event.bytesTotal;
@@ -295,21 +296,21 @@ package com.ice.core.base {
 		
 		
 		// This is the standard non-Air media load process
-		private function loadError(event:IOErrorEvent):void {
-			event.target.removeEventListener(Event.COMPLETE, this.loadComplete);
-			event.target.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
-			event.target.removeEventListener(IOErrorEvent.IO_ERROR , this.loadError);
-			this.dispatchEvent(new Event(Engine.MEDIALOADERROR));
+		private function _loadError(event:IOErrorEvent):void {
+			event.target.removeEventListener(Event.COMPLETE, _loadComplete);
+			event.target.removeEventListener(ProgressEvent.PROGRESS, _loadProgress);
+			event.target.removeEventListener(IOErrorEvent.IO_ERROR , _loadError);
+			dispatchEvent(new Event(Engine.MEDIALOADERROR));
 		}
 		
-		private function loadComplete(event:Event):void {
-			event.target.removeEventListener(Event.COMPLETE, this.loadComplete);
-			event.target.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
-			event.target.removeEventListener(IOErrorEvent.IO_ERROR, this.loadError);
-			this.dispatchEvent(new Event(Engine.MEDIALOADCOMPLETE));
+		private function _loadComplete(event:Event):void {
+			event.target.removeEventListener(Event.COMPLETE, _loadComplete);
+			event.target.removeEventListener(ProgressEvent.PROGRESS, _loadProgress);
+			event.target.removeEventListener(IOErrorEvent.IO_ERROR, _loadError);
+			dispatchEvent(new Event(Engine.MEDIALOADCOMPLETE));
 		}
 		
-		private function loadProgress(event:ProgressEvent):void {
+		private function _loadProgress(event:ProgressEvent):void {
 			var ret:ProgressEvent = new ProgressEvent(Engine.MEDIALOADPROGRESS);
 			ret.bytesLoaded = event.bytesLoaded;
 			ret.bytesTotal = event.bytesTotal;
@@ -342,42 +343,43 @@ package com.ice.core.base {
 			nfScene.initialize();
 			
 			// Add to list and return
-			this.scenes[this.scenes.length] = nfScene;
+			_scenes[_scenes.length] = nfScene;
 			return nfScene;
 		}
 		
 		/**
 		 * This method frees all resources allocated by an scene. Use this as often as possible and always clean unused scene objects:
-		 * scenes generate lots of internal Arrays and BitmapDatas that will eat your RAM fast if they are not properly deleted
+		 * _scenes generate lots of internal Arrays and BitmapDatas that will eat your RAM fast if they are not properly deleted
 		 *
 		 * @param sc The fScene you want to destroy
 		 */
 		public function destroyScene(sc:Scene):void {
-			this.hideScene(sc);
+			hideScene(sc);
 			sc.dispose();
-			this.scenes.splice(this.scenes.indexOf(sc), 1);
-			objectPool.flush();
+			_scenes.splice(_scenes.indexOf(sc), 1);
+			ObjectPool.flush();
 		}
 		
 		/**
 		 * Makes visible one scene in the Engine. Only one scene can be visible at the same time.
-		 * The current visible scene, if any, will me moved to the invisible scene list.<br>
+		 * The currentScene visible scene, if any, will me moved to the invisible scene list.<br>
 		 * Showing an scene does not enable it
 		 *
 		 * @param sc The fScene you want to activate
 		 */
 		public function showScene(sc:Scene):void {
-			if(this.current==sc) return;
+			if(currentScene==sc)
+				return;
 			
-			if(this.current!=null) {
-				this.current.stopRendering();
-				this.container.removeChild(this.current.container);
+			if(currentScene!=null) {
+				currentScene.stopRendering();
+				container.removeChild(currentScene.container);
 			}
 			
-			this.current = sc;
-			this.current.startRendering();
-			this.current.enable();
-			this.container.addChild(sc.container);
+			currentScene = sc;
+			currentScene.startRendering();
+			currentScene.enable();
+			container.addChild(sc.container);
 		}
 		
 		/**
@@ -386,17 +388,17 @@ package com.ice.core.base {
 		 * If you hide an scene all the Sprites and graphic resources are destroyed, and so are Mouse Events attached to them. You will need
 		 * to reset the events if the scene is shown again.
 		 *
-		 * <p><b>IMPORTANT!</b>: Hidden scenes still consume memory. If you want to free all resources allocated by scenes that will no longer be used, use the Engine.destroy() method.</p>
+		 * <p><b>IMPORTANT!</b>: Hidden _scenes still consume memory. If you want to free all resources allocated by _scenes that will no longer be used, use the Engine.destroy() method.</p>
 		 *
 		 * @param sc The fScene you want to hide
 		 * @param destroyRender Pass false if you don't want the rendering to be destroyed when you hide the scene. By doing this, the graphics are already available when the scene is shown again
 		 */
 		public function hideScene(sc:Scene, destroyRender:Boolean = true):void {
-			if(this.current==sc) {
+			if(currentScene==sc) {
 				if(destroyRender) 
-					this.current.stopRendering();
-				this.container.removeChild(this.current.container);
-				this.current = null;
+					currentScene.stopRendering();
+				container.removeChild(currentScene.container);
+				currentScene = null;
 			}
 		}
 		
@@ -415,10 +417,10 @@ package com.ice.core.base {
 		public static function set bumpMapping(bmp:Boolean):void {
 			Engine._bumpMapping = bmp;
 			
-			// Update scenes
-			for(var i:Number=0; i<Engine.engines.length; i++) {
-				var e:Engine = Engine.engines[i];
-				if(e.current) e.current.render();
+			// Update _scenes
+			for(var i:Number = 0; i < _engines.length; i++) {
+				var e:Engine = _engines[i];
+				if(e.currentScene) e.currentScene.render();
 			}
 		}			 
 		
@@ -426,50 +428,45 @@ package com.ice.core.base {
 		 * This property enables/disables shadow projection of objects
 		 */
 		public static function get objectShadows():Boolean {
-			return Engine._objectShadows
+			return _objectShadows;
 		}
 		
 		public static function set objectShadows(shd:Boolean):void {
+			_objectShadows = shd;
 			
-			Engine._objectShadows = shd
-			
-			// Update scenes
-			for(var i:Number=0;i<Engine.engines.length;i++) {
+			// Update _scenes
+			for(var i:Number = 0; i < _engines.length; i++) {
 				
-				var e:Engine = Engine.engines[i]
-				if(e.current) {
-					e.current.resetGrid()
-					e.current.resetShadows()
-					e.current.render()
+				var e:Engine = _engines[i];
+				if(e.currentScene) {
+					e.currentScene.resetGrid();
+					e.currentScene.resetShadows();
+					e.currentScene.render();
 				}
-				
 			}
-			
 		}			 
 		
 		/**
 		 * This property enables/disables shadow projection of characters
 		 */
 		public static function get characterShadows():Boolean {
-			return Engine._characterShadows
+			return _characterShadows;
 		}
 		
 		public static function set characterShadows(shd:Boolean):void {
 			
-			Engine._characterShadows = shd
+			_characterShadows = shd;
 			
-			// Update scenes
-			for(var i:Number=0;i<Engine.engines.length;i++) {
+			// Update _scenes
+			for(var i:Number = 0; i < _engines.length; i++) {
 				
-				var e:Engine = Engine.engines[i]
-				if(e.current) {
-					e.current.resetShadows()
-					e.current.render()
+				var e:Engine = _engines[i];
+				if(e.currentScene) {
+					e.currentScene.resetShadows();
+					e.currentScene.render();
 				}
 			}
-			
 		}			 
-		
 		
 		/**
 		 * This property defines the quality at which object and character shadows are rendered
@@ -477,29 +474,21 @@ package com.ice.core.base {
 		 * @see org.ffilmation.engine.core.fShadowQuality
 		 */
 		public static function get shadowQuality():int {
-			return Engine._shadowQuality
+			return _shadowQuality;
 		}
 		
 		public static function set shadowQuality(shd:int):void {
-			
-			Engine._shadowQuality = shd
+			_shadowQuality = shd;
 			
 			// Update scenes
-			for(var i:Number=0;i<Engine.engines.length;i++) {
+			for(var i:Number = 0; i < _engines.length; i++) {
 				
-				var e:Engine = Engine.engines[i]
-				if(e.current) {
-					e.current.resetShadows()
-					e.current.render()
+				var e:Engine = _engines[i];
+				if(e.currentScene) {
+					e.currentScene.resetShadows();
+					e.currentScene.render();
 				}
 			}
-			
 		}			 
-		
-		
 	}
-	
 }
-
-
-

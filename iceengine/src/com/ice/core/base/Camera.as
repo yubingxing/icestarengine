@@ -1,7 +1,6 @@
 // CAMERA
 
 package com.ice.core.base {
-	
 	// Imports
 	
 	/**
@@ -11,14 +10,14 @@ package com.ice.core.base {
 	 * <p>YOU CAN'T CREATE INSTANCES OF THIS ELEMENT DIRECTLY.<br>
 	 * Use scene.createCamera() to add new cameras to the scene</p>
 	 *
-	 * @see org.ffilmation.engine.core.fScene#createCamera()
-	 * @see org.ffilmation.engine.core.fScene#setCamera()
+	 * @see com.ice.core.base.Scene#createCamera()
+	 * @see com.ice.core.base.Scene#setCamera()
 	 *
 	 */
 	public class Camera extends MovingElement {
 		
 		// Constants
-		private static var count:Number = 0;
+		private static var _count:Number = 0;
 		
 		/**
 		 * Constructor for the Camera class
@@ -29,7 +28,7 @@ package com.ice.core.base {
 		 */
 		function Camera(scene:Scene) {
 			
-			var myId:String = "Camera_" + (Camera.count++);
+			var myId:String = "Camera_" + (_count++);
 			
 			// Previous
 			super(<camera id={myId}/>, scene);			 

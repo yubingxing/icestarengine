@@ -8,7 +8,7 @@ package com.ice.core.interfaces {
 	/**
 	 * This interface defines the methods that any class that is to be used as pathFind criteria must implement
 	 */
-	public interface IPathfinder  {
+	public interface IPathfindCriteria  {
 		
 		/**
 		 * This method return the origin point for this search
