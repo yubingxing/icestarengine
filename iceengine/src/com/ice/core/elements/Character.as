@@ -26,7 +26,7 @@ package com.ice.core.elements {
 	 * @see org.ffilmation.engine.core.fScene#createCharacter()
 	 *
 	 */
-	public class Character extends Object implements fMovingElement {
+	public class Character extends BaseElement implements MovingElement {
 		
 		// Constants
 		

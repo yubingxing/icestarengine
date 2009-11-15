@@ -1,5 +1,6 @@
 // Object class
 package com.ice.core.elements {
+	import com.ice.core.RenderableElement;
 	
 	// Imports
 	
@@ -17,7 +18,7 @@ package com.ice.core.elements {
 	 *
 	 * @see org.ffilmation.engine.elements.fCharacter
 	 */
-	public class Object extends fRenderableElement {
+	public class BaseElement extends RenderableElement {
 		
 		// Constants
 		
@@ -108,7 +109,7 @@ package com.ice.core.elements {
 		
 		// Constructor
 		/** @private */
-		function Object(defObj:XML,scene:fScene):void {
+		function BaseElement(defObj:XML,scene:fScene):void {
 			
 			// Previous
 			super(defObj,scene)
@@ -153,7 +154,7 @@ package com.ice.core.elements {
 			}
 			
 			// Define shadowRange
-			this.shadowRange = this.height*Object.MAXSHADOW*fEngine.DEFORMATION
+			this.shadowRange = this.height*BaseElement.MAXSHADOW*fEngine.DEFORMATION
 			
 			// Define bounds. I need to load the symbol from the library to know its size. I will be destroyed immediately
 			this.top = this.z+this.height
@@ -223,7 +224,7 @@ package com.ice.core.elements {
 			this.collisionModel.orientation = (this.sprites[newSprite] as fSpriteDefinition).angle
 			
 			// Dispatch event so the render engine updates the screen
-			this.dispatchEvent(new Event(Object.NEWORIENTATION))
+			this.dispatchEvent(new Event(BaseElement.NEWORIENTATION))
 			
 		}
 		
@@ -262,7 +263,7 @@ package com.ice.core.elements {
 			if(this.flashClip) this.flashClip.gotoAndPlay(where)
 			
 			// Dispatch event so the render engine updates the screen
-			this.dispatchEvent(new Event(Object.GOTOANDPLAY))
+			this.dispatchEvent(new Event(BaseElement.GOTOANDPLAY))
 			
 		}
 		
@@ -276,7 +277,7 @@ package com.ice.core.elements {
 			if(this.flashClip) this.flashClip.gotoAndStop(where)
 			
 			// Dispatch event so the render engine updates the screen
-			this.dispatchEvent(new Event(Object.GOTOANDSTOP))
+			this.dispatchEvent(new Event(BaseElement.GOTOANDSTOP))
 			
 		}
 		

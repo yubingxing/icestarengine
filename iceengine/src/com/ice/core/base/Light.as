@@ -1,6 +1,6 @@
 // LIGHT
 
-package com.ice.core {
+package com.ice.core.base {
 	
 		// Imports
 
@@ -11,7 +11,7 @@ package com.ice.core {
 		*
 		* <p>YOU CAN'T CREATE INSTANCES OF THIS OBJECT</p>
 		*/
-		public class Light extends Element {
+		public class Light extends MovingElement {
 		
 			// Constants
 			/** @private */

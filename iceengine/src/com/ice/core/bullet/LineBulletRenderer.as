@@ -4,6 +4,7 @@
 package com.ice.core.bullet {
 	import com.ice.core.Plane;
 	import com.ice.core.RenderableElement;
+	import com.ice.core.elements.BaseElement;
 	import com.ice.core.elements.Bullet;
 	import com.ice.core.elements.Character;
 	import com.ice.core.interfaces.IBulletRenderer;
@@ -45,8 +46,8 @@ package com.ice.core.bullet {
 		 * @param characterRicochetDefinition MovieClip definition for character ricochets
 		 * @param objectRicochetDefinition MovieClip definition for object ricochets
 		 */
-		public function LineBulletRenderer(color:Number, size:Number, alpha:Number=1, planeRicochetDefinition:String=null, 
-										   characterRicochetDefinition:String=null, objectRicochetDefinition:String=null):void {
+		public function LineBulletRenderer(color:Number, size:Number, alpha:Number = 1, planeRicochetDefinition:String = null, 
+										   characterRicochetDefinition:String = null, objectRicochetDefinition:String = null):void {
 			this.color = color;
 			this.size = size;
 			this.alpha = alpha;
@@ -65,7 +66,7 @@ package com.ice.core.bullet {
 		/** @private */
 		public function update(bullet:Bullet):void {
 			bullet.container.graphics.clear();
-			bullet.container.graphics.lineStyle(this.size,this.color,this.alpha);
+			bullet.container.graphics.lineStyle(this.size, this.color,this.alpha);
 			bullet.container.graphics.lineTo(bullet.customData.oldx - bullet.container.x,bullet.customData.oldy - bullet.container.y);
 			bullet.customData.oldx = bullet.container.x;
 			bullet.customData.oldy = bullet.container.y;
@@ -84,9 +85,9 @@ package com.ice.core.bullet {
 					clase = getDefinitionByName(this.planeRicochetDefinition) as Class;
 				else if(element is Character) 
 					clase = getDefinitionByName(this.characterRicochetDefinition) as Class;
-				else if(element is fObject) 
+				else if(element is BaseElement) 
 					clase = getDefinitionByName(this.objectRicochetDefinition) as Class;
-				return ObjectPool.getInstanceOf(clase) as MovieClip;
+				return MovieClip(ObjectPool.getInstanceOf(clase));
 			} catch(er:Error) {
 				return null;
 			}

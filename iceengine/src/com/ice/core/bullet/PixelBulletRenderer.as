@@ -4,7 +4,7 @@
 package com.ice.core.bullet {
 	import com.ice.core.elements.Bullet;
 	import com.ice.core.elements.Character;
-	import com.ice.core.elements.Object;
+	import com.ice.core.elements.BaseElement;
 	import com.ice.core.Plane;
 	import com.ice.core.RenderableElement;
 	import com.ice.core.interfaces.IBulletRenderer;
@@ -83,7 +83,7 @@ package com.ice.core.bullet {
 					clase = getDefinitionByName(this.planeRicochetDefinition) as Class;
 				else if(element is Character) 
 					clase = getDefinitionByName(this.characterRicochetDefinition) as Class;
-				else if(element is Object) 
+				else if(element is BaseElement) 
 					clase = getDefinitionByName(this.objectRicochetDefinition) as Class;
 				return objectPool.getInstanceOf(clase) as MovieClip;
 			} catch(e:Error) {

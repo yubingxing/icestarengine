@@ -1,7 +1,7 @@
 /**
  * 基础对象类 
  */
-package com.ice.core {
+package com.ice.core.base {
 	import com.ice.core.events.MoveEvent;
 	import com.ice.core.interfaces.IElementController;
 	import com.ice.util.ds.Cell;
@@ -19,7 +19,7 @@ package com.ice.core {
 	 *
 	 * <p>YOU CAN'T CREATE INSTANCES OF THIS OBJECT</p>
 	 */
-	public class Element extends EventDispatcher {
+	public class MovingElement extends EventDispatcher {
 		
 		// This counter is used to generate unique element Ids for elements that don't have a specific Id in their XML definition
 		/** @private */
@@ -134,13 +134,13 @@ package com.ice.core {
 			return _offz;
 		}
 		
-		function Element(defObj:XML,scene:Scene):void {
+		function MovingElement(defObj:XML,scene:Scene):void {
 			
 			// Id
 			this.xmlObj = defObj;
 			var temp:XMLList= defObj.@id;
 			
-			this.uniqueId = Element.count++;
+			this.uniqueId = MovingElement.count++;
 			if(temp.length()==1) 
 				this.id = temp.toString();
 			else 
@@ -211,10 +211,10 @@ package com.ice.core {
 			var cell:Cell = this.scene.translateToCell(x, y, z);
 			if(this.cell == null || cell == null || cell != this.cell) {
 				this.cell = cell;
-				dispatchEvent(new Event(Element.NEWCELL));
+				dispatchEvent(new Event(MovingElement.NEWCELL));
 			}
 			// Dispatch event
-			this.dispatchEvent(new MoveEvent(Element.MOVE,this.x-dx,this.y-dy,this.z-dz));
+			this.dispatchEvent(new MoveEvent(MovingElement.MOVE,this.x-dx,this.y-dy,this.z-dz));
 		}
 		
 		
@@ -226,12 +226,12 @@ package com.ice.core {
 		 * @param elasticity: How strong is the element attached to what is following. 0 Means a solid bind. The bigger the number, the looser the bind.
 		 *
 		 */
-		public function follow(target:Element, elasticity:Number=0):void {
+		public function follow(target:MovingElement, elasticity:Number=0):void {
 			this._offx = target.x-this.x;
 			this._offy = target.y-this.y;	
 			this._offz = target.z-this.z;
 			this.elasticity = 1+elasticity;
-			target.addEventListener(Element.MOVE, this.moveListener, false, 0, true);
+			target.addEventListener(MovingElement.MOVE, this.moveListener, false, 0, true);
 		}
 		
 		/**
@@ -240,8 +240,8 @@ package com.ice.core {
 		 * @param target: The filmation element to be followed
 		 *
 		 */
-		public function stopFollowing(target:Element):void {
-			target.removeEventListener(Element.MOVE, this.moveListener);
+		public function stopFollowing(target:MovingElement):void {
+			target.removeEventListener(MovingElement.MOVE, this.moveListener);
 		}
 		
 		// Listens for another element's movements

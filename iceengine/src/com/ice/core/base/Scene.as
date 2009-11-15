@@ -1,6 +1,6 @@
 // SCENE
 
-package com.ice.core {
+package com.ice.core.base {
 
 		// Imports
 		import flash.xml.*
@@ -400,14 +400,14 @@ package com.ice.core {
 				
 					// Stop following old camera
 					if(this.currentCamera) {
-						this.currentCamera.removeEventListener(Element.MOVE,this.cameraMoveListener)
-						this.currentCamera.removeEventListener(Element.NEWCELL,this.cameraNewCellListener)
+						this.currentCamera.removeEventListener(MovingElement.MOVE,this.cameraMoveListener)
+						this.currentCamera.removeEventListener(MovingElement.NEWCELL,this.cameraNewCellListener)
 					}
 					
 					// Follow new camera
 					this.currentCamera = camera
-					this.currentCamera.addEventListener(Element.MOVE,this.cameraMoveListener,false,0,true)
-					this.currentCamera.addEventListener(Element.NEWCELL,this.cameraNewCellListener,false,0,true)
+					this.currentCamera.addEventListener(MovingElement.MOVE,this.cameraMoveListener,false,0,true)
+					this.currentCamera.addEventListener(MovingElement.NEWCELL,this.cameraNewCellListener,false,0,true)
 					if(this.IAmBeingRendered) this.renderManager.processNewCellCamera(camera)
 					this.followCamera(this.currentCamera)
 			}
@@ -455,8 +455,8 @@ package com.ice.core {
 			   	var nfLight:fOmniLight = new fOmniLight(definitionObject,this)
 			   	
 			   	// Events
-				 	nfLight.addEventListener(Element.NEWCELL,this.processNewCell,false,0,true)			   
-				 	nfLight.addEventListener(Element.MOVE,this.renderElement,false,0,true)			   
+				 	nfLight.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
+				 	nfLight.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
 				 	nfLight.addEventListener(Light.RENDER,this.processNewCell,false,0,true)			   
 				 	nfLight.addEventListener(Light.RENDER,this.renderElement,false,0,true)			   
 				 	nfLight.addEventListener(Light.SIZECHANGE,this.processNewLightDimensions,false,0,true)			   
@@ -495,8 +495,8 @@ package com.ice.core {
 		      this.all[light.id] = null
 		      
 			   	// Events
-				 	light.removeEventListener(Element.NEWCELL,this.processNewCell)			   
-				 	light.removeEventListener(Element.MOVE,this.renderElement)			   
+				 	light.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
+				 	light.removeEventListener(MovingElement.MOVE,this.renderElement)			   
 				 	light.removeEventListener(Light.RENDER,this.processNewCell)			   
 				 	light.removeEventListener(Light.RENDER,this.renderElement)			   
 				 	light.removeEventListener(Light.SIZECHANGE,this.processNewLightDimensions)			   
@@ -537,8 +537,8 @@ package com.ice.core {
 			   	nCharacter.setDepth(c.zIndex)
 			   	
 			   	// Events
-				 	nCharacter.addEventListener(Element.NEWCELL,this.processNewCell,false,0,true)			   
-				 	nCharacter.addEventListener(Element.MOVE,this.renderElement,false,0,true)			   
+				 	nCharacter.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
+				 	nCharacter.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
          	
 			   	// Add to lists
 			   	this.characters.push(nCharacter)
@@ -572,8 +572,8 @@ package com.ice.core {
 		      char.hide()
 			   	
 			   	// Events
-				 	char.removeEventListener(Element.NEWCELL,this.processNewCell)			   
-				 	char.removeEventListener(Element.MOVE,this.renderElement)			   
+				 	char.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
+				 	char.removeEventListener(MovingElement.MOVE,this.renderElement)			   
 
 		      // Remove from render engine
 		      this.removeElementFromRenderEngine(char)
@@ -604,8 +604,8 @@ package com.ice.core {
 			   	nEmptySprite.updateDepth()
 			   	
 			   	// Events
-				 	nEmptySprite.addEventListener(Element.NEWCELL,this.processNewCell,false,0,true)			   
-				 	nEmptySprite.addEventListener(Element.MOVE,this.renderElement,false,0,true)			   
+				 	nEmptySprite.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
+				 	nEmptySprite.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
          	
 			   	// Add to lists
 			   	this.emptySprites.push(nEmptySprite)
@@ -638,8 +638,8 @@ package com.ice.core {
 		      spr.hide()
 			   	
 			   	// Events
-				 	spr.removeEventListener(Element.NEWCELL,this.processNewCell)			   
-				 	spr.removeEventListener(Element.MOVE,this.renderElement)			   
+				 	spr.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
+				 	spr.removeEventListener(MovingElement.MOVE,this.renderElement)			   
 
 		      // Remove from render engine
 		      this.removeElementFromRenderEngine(spr)
@@ -682,8 +682,8 @@ package com.ice.core {
 				}
 				
 				// Events
-				b.addEventListener(Element.NEWCELL,this.processNewCell,false,0,true)			   
-				b.addEventListener(Element.MOVE,this.renderElement,false,0,true)			   
+				b.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
+				b.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
 				b.addEventListener(fBullet.SHOT,fBulletSceneLogic.processShot,false,0,true)			   
 
 				// Properties
@@ -714,8 +714,8 @@ package com.ice.core {
 			public function removeBullet(bullet:fBullet):void {
 
 				// Events
-				bullet.removeEventListener(Element.NEWCELL,this.processNewCell)			   
-				bullet.removeEventListener(Element.MOVE,this.renderElement)			   
+				bullet.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
+				bullet.removeEventListener(MovingElement.MOVE,this.renderElement)			   
 				bullet.removeEventListener(fBullet.SHOT,fBulletSceneLogic.processShot)
 				
 				// Hide

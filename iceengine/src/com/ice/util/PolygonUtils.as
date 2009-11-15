@@ -203,8 +203,8 @@
 										
 										maxLoops--
 			    	
-										Cp_A_point.x = (Cp_t_start.x + Cp_t_end.x) / 2
-										Cp_A_point.y = (Cp_t_start.y + Cp_t_end.y) / 2
+										Cp_A_point.x = (Cp_t_start.x + Cp_t_end.x) >> 1;
+										Cp_A_point.y = (Cp_t_start.y + Cp_t_end.y) >> 1;
 			    	
 									  A_code = PolygonUtils.spaceCode(Cp_A_point,viewport)
 			    	

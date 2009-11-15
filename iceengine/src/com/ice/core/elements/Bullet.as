@@ -3,7 +3,13 @@
  */
 package com.ice.core.elements {
 	import com.ice.core.RenderableElement;
-	import com.ice.core.interfaces.IMovingObject;
+	import com.ice.core.Scene;
+	import com.ice.core.events.ShotEvent;
+	import com.ice.core.interfaces.IElementController;
+	import com.ice.core.interfaces.IMovingElement;
+	import com.ice.util.ds.CoordinateOccupant;
+	
+	import flash.events.Event;
 	
 	// Imports
 	
@@ -23,9 +29,9 @@ package com.ice.core.elements {
 	 * being created and destroyed. The engine uses an object pool to reuse "dead" bullets and minimize the amount of new() calls. This
 	 * is transparent to you but I think this information can help tracking weird bugs</p>
 	 *
-	 * @see org.ffilmation.engine.core.fScene#createBullet()
+	 * @see org.ffilmation.engine.core.Scene#createBullet()
 	 */
-	public class Bullet extends RenderableElement implements IMovingObject {
+	public class Bullet extends RenderableElement implements IMovingElement {
 		
 		// Constants
 		
@@ -37,7 +43,7 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType charactercollide
 		 */
-		public static const SHOT:String = "bulletshot"
+		public static const SHOT:String = "bulletshot";
 		
 		/**
 		 * The fBullet.SHOTTHROUGH constant defines the value of the 
@@ -47,32 +53,30 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType characterwalkover
 		 */
-		public static const SHOT_THROUGH:String = "bulletshot_through"
+		public static const SHOT_THROUGH:String = "bulletshot_through";
 		
 		// Properties
 		
 		/** Speed of bullet along X-axis, in pixels per frame. Can be altered during movement. */
-		public var speedx:Number
+		public var speedx:Number;
 		
 		/** Speed of bullet along Y-axis, in pixels per frame. Can be altered during movement. */
-		public var speedy:Number
+		public var speedy:Number;
 		
 		/** Speed of bullet along Z-axis, in pixels per frame. Can be altered during movement. */
-		public var speedz:Number
+		public var speedz:Number;
 		
 		// Constructor
 		/** @private */
-		function Bullet(scene:fScene):void {
-			
+		function Bullet(scene:Scene):void {
 			// Previous. no real XML is needed for bullets
-			super(<bullet/>,scene)
+			super(<bullet/>,scene);
 			
 			// Overwrite properties that don't apply to bullets
-			this.receiveLights = false
-			this.receiveShadows = false
-			this.castShadows = false
-			this.solid = true
-			
+			this.receiveLights = false;
+			this.receiveShadows = false;
+			this.castShadows = false;
+			this.solid = true;
 		}
 		
 		/**
@@ -80,87 +84,82 @@ package com.ice.core.elements {
 		 * @private
 		 */
 		public function control(evt:Event):void {
-			
 			// Apply speed
-			var nx:Number = this.x+this.speedx
-			var ny:Number = this.y+this.speedy
-			var nz:Number = this.z+this.speedz
+			var nx:Number = this.x+this.speedx;
+			var ny:Number = this.y+this.speedy;
+			var nz:Number = this.z+this.speedz;
 			
 			// See if we collided against something. If we did, apply new coordinates
-			var inFront:Array = fLineOfSightSolver.calculateLineOfSight(this.scene,this.x,this.y,this.z,nx,ny,nz)
-			var any:RenderableElement = null
+			var inFront:Array = fLineOfSightSolver.calculateLineOfSight(this.scene, this.x, this.y, this.z, nx, ny, nz);
+			var any:RenderableElement = null;
 			
-			for(var i:Number=0;any==null && inFront && i<inFront.length;i++) {
-				var oc:fCoordinateOccupant = inFront[i]
-				
+			for(var i:Number = 0; any == null && inFront && i < inFront.length; i++) {
+				var oc:CoordinateOccupant = inFront[i];
 				if(!oc.element.solid) {
-					
 					// Shot non-solid
-					var evt2:fShotEvent = new fShotEvent(Bullet.SHOT_THROUGH,this,oc.element,oc.coordinate)
-					this.dispatchEvent(evt2)
-					oc.element.dispatchEvent(evt2)
-					
+					var evt2:ShotEvent = new ShotEvent(Bullet.SHOT_THROUGH, this, oc.element, oc.coordinate);
+					this.dispatchEvent(evt2);
+					oc.element.dispatchEvent(evt2);
 				} else {
-					
 					// Shot solid
-					any = oc.element
-					nx = oc.coordinate.x
-					ny = oc.coordinate.y
-					nz = oc.coordinate.z
-					if(this.speedx>0) nx-=0.1; else nx+=0.1
-					if(this.speedy>0) ny-=0.1; else ny+=0.1
-					if(this.speedz>0) nz-=0.1; else nz+=0.1
-					
+					any = oc.element;
+					nx = oc.coordinate.x;
+					ny = oc.coordinate.y;
+					nz = oc.coordinate.z;
+					if(this.speedx > 0) 
+						nx-=0.1; 
+					else 
+						nx+=0.1;
+					if(this.speedy > 0) 						
+						ny-=0.1; 
+					else 
+						ny+=0.1;
+					if(this.speedz > 0) 
+						nz-=0.1; 
+					else 
+						nz+=0.1;
 				}
-				
 			}
 			
 			// Move bullet to new position
-			this.moveTo(nx,ny,nz)
+			this.moveTo(nx,ny,nz);
 			
 			// If we collided against something
 			if(any!=null) {
-				
 				// Generate event
-				evt2 = new fShotEvent(Bullet.SHOT,this,oc.element,oc.coordinate)
-				this.dispatchEvent(evt2)
-				oc.element.dispatchEvent(evt2)
+				evt2 = new ShotEvent(Bullet.SHOT, this, oc.element, oc.coordinate);
+				this.dispatchEvent(evt2);
+				oc.element.dispatchEvent(evt2);
 			}
-			
 		}
 		
 		// Bullets control themselves
 		/** @private */
-		public override function set controller(controller:fEngineElementController):void {
+		public override function set controller(controller:IElementController):void {
 			throw new Error("Filmation Engine Exception: You can't assign controllers to fBullets. Bullets control themselves."); 
 		}
 		
 		// Bullets control themselves
 		/** @private */
 		public function enable():void {
-			this.scene.container.addEventListener(Event.ENTER_FRAME,this.control,false,0,true)
+			this.scene.container.addEventListener(Event.ENTER_FRAME, this.control, false, 0, true);
 		}
 		
 		// Bullets control themselves
 		/** @private */
 		public function disable():void {
-			this.scene.container.removeEventListener(Event.ENTER_FRAME,this.control)
+			this.scene.container.removeEventListener(Event.ENTER_FRAME, this.control);
 		}
 		
 		/** @private */
 		public function disposeBullet():void {
-			this.disable()
-			this.disposeRenderable()
+			this.disable();
+			this.disposeRenderable();
 		}
 		
 		/** @private */
 		public override function dispose():void {
-			this.disposeBullet()
+			this.disposeBullet();
 		}		
-		
-		
-		
 	}
-	
-	
 }

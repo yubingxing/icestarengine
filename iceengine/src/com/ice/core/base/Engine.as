@@ -1,4 +1,4 @@
-package com.ice.core {
+package com.ice.core.base {
 	import com.ice.core.interfaces.IRenderEngine;
 	import com.ice.core.interfaces.ISceneRetriever;
 	import com.ice.profiler.Profiler;

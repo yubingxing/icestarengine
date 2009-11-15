@@ -44,7 +44,7 @@ package com.ice.profiler
 		/** @private */
 		public static var ItemHeight: int = 10;
 		/** @private */
-		public static var ItemHeightOn2: Number = Number( ItemHeight ) / 2.;
+		public static var ItemHeightOn2: Number = Number( ItemHeight ) >> 1.;
 		/** @private */
 		public static var GraphBarOffsetY: int = 5;
 		/** @private */

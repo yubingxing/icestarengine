@@ -1,7 +1,7 @@
 /**
  * 基础渲染对象类 
  */
-package com.ice.core {
+package com.ice.core.base {
 	import flash.events.Event;
 	
 	// Imports
@@ -13,7 +13,7 @@ package com.ice.core {
 	 *
 	 * <p>YOU CAN'T CREATE INSTANCES OF THIS OBJECT</p>
 	 */
-	public class RenderableElement extends Element {
+	public class RenderableElement extends MovingElement {
 		
 		// Public properties
 		

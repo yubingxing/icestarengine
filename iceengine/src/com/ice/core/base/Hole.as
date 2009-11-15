@@ -1,4 +1,4 @@
-package com.ice.core {
+package com.ice.core.base {
 	import flash.events.EventDispatcher;
 	
 	// Imports

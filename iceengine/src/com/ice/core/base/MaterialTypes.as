@@ -1,4 +1,4 @@
-package com.ice.core {
+package com.ice.core.base {
 
     /**
     * The fMaterialTypes class provides a list of all available material types in the engine,

@@ -1,5 +1,5 @@
 // Bounds
-package com.ice.core {
+package com.ice.core.base {
 	
 		/**
 		* @private

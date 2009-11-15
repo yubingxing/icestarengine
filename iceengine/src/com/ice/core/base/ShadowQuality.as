@@ -1,7 +1,7 @@
 /**
  *  投影配置
  */
-package com.ice.core {
+package com.ice.core.base {
 	
 	/**
 	 * The fShadowQuality class provides constants for the shadowQuality property of the engine

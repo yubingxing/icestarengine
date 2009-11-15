@@ -40,7 +40,7 @@ package com.ice.profiler
 		private static const RGBMAX: int	= 255;
 
 		// computed constants
-		private static const HLSMAX_DIV_2: int 			= ( HLSMAX / 2 );
+		private static const HLSMAX_DIV_2: int 			= ( HLSMAX >> 1 );
 		private static const HLSMAX_DIV_3: int 			= ( HLSMAX / 3 );
 		private static const HLSMAX_DIV_6: int 			= ( HLSMAX / 6 );
 		private static const HLSMAX_DIV_12: int 		= ( HLSMAX / 12 );

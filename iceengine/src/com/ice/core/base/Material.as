@@ -1,5 +1,5 @@
 // The Material Class provides an abstract interface between the Engine and the user defined materials
-package com.ice.core {
+package com.ice.core.base {
 	
 		// Imports
 	  
