@@ -6,6 +6,7 @@ package com.ice.core.base {
 	import com.ice.core.interfaces.IElementController;
 	import com.ice.util.ds.Cell;
 	
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
 	// Imports
@@ -95,17 +96,17 @@ package com.ice.core.base {
 		
 		// Private.
 		// This is the destination of this element, when following another element
-		private var destx:Number;	
-		private var desty:Number;
-		private var destz:Number;
+		private var _destX:Number;	
+		private var _destY:Number;
+		private var _destZ:Number;
 		
 		// This is the offset of this element, when following another element
-		private var _offx:Number;	
-		private var _offy:Number;
-		private var _offz:Number;
+		private var _offX:Number;	
+		private var _offY:Number;
+		private var _offZ:Number;
 		
 		// How fast we fall into the destination point
-		private var elasticity:Number;
+		private var _elasticity:Number;
 		
 		// Controller
 		private var _controller:IElementController = null;
@@ -121,17 +122,17 @@ package com.ice.core.base {
 		
 		public function get offx():Number
 		{
-			return _offx;
+			return _offX;
 		}
 		
 		public function get offy():Number
 		{
-			return _offy;
+			return _offY;
 		}
 		
 		public function get offz():Number
 		{
-			return _offz;
+			return _offZ;
 		}
 		
 		function MovingElement(defObj:XML,scene:Scene):void {
@@ -144,7 +145,7 @@ package com.ice.core.base {
 			if(temp.length()==1) 
 				this.id = temp.toString();
 			else 
-				this.id = "fElement_"+this.uniqueId;
+				this.id = "Element_"+this.uniqueId;
 			
 			// Reference to container scene
 			this.scene = scene;
@@ -195,7 +196,7 @@ package com.ice.core.base {
 		 * @param z: New z coordinate
 		 *
 		 */
-		public function moveTo(x:Number,y:Number,z:Number):void {
+		public function moveTo(x:Number, y:Number, z:Number):void {
 			
 			// Last position
 			var dx:Number = this.x;
@@ -214,7 +215,7 @@ package com.ice.core.base {
 				dispatchEvent(new Event(MovingElement.NEWCELL));
 			}
 			// Dispatch event
-			this.dispatchEvent(new MoveEvent(MovingElement.MOVE,this.x-dx,this.y-dy,this.z-dz));
+			this.dispatchEvent(new MoveEvent(MovingElement.MOVE, this.x - dx, this.y - dy, this.z - dz));
 		}
 		
 		
@@ -223,15 +224,15 @@ package com.ice.core.base {
 		 * 
 		 * @param target: The filmation element to be followed
 		 *
-		 * @param elasticity: How strong is the element attached to what is following. 0 Means a solid bind. The bigger the number, the looser the bind.
+		 * @param _elasticity: How strong is the element attached to what is following. 0 Means a solid bind. The bigger the number, the looser the bind.
 		 *
 		 */
-		public function follow(target:MovingElement, elasticity:Number=0):void {
-			this._offx = target.x-this.x;
-			this._offy = target.y-this.y;	
-			this._offz = target.z-this.z;
-			this.elasticity = 1+elasticity;
-			target.addEventListener(MovingElement.MOVE, this.moveListener, false, 0, true);
+		public function follow(target:MovingElement, _elasticity:Number=0):void {
+			_offX = target.x - this.x;
+			_offY = target.y - this.y;	
+			_offZ = target.z - this.z;
+			_elasticity = 1 + _elasticity;
+			target.addEventListener(MovingElement.MOVE, moveListener, false, 0, true);
 		}
 		
 		/**
@@ -241,19 +242,19 @@ package com.ice.core.base {
 		 *
 		 */
 		public function stopFollowing(target:MovingElement):void {
-			target.removeEventListener(MovingElement.MOVE, this.moveListener);
+			target.removeEventListener(MovingElement.MOVE, moveListener);
 		}
 		
 		// Listens for another element's movements
 		/** @private */
-		public function moveListener(evt:fMoveEvent):void {
-			if(this.elasticity == 1) 
-				this.moveTo(evt.target.x - this._offx, evt.target.y - this._offy, evt.target.z - this._offz);
+		public function moveListener(evt:MoveEvent):void {
+			if(_elasticity == 1) 
+				this.moveTo(evt.target.x - _offX, evt.target.y - _offY, evt.target.z - _offZ);
 			else {
-				this.destx = evt.target.x - this._offx;
-				this.desty = evt.target.y - this._offy;
-				this.destz = evt.target.z - this._offz;
-				Engine.stage.addEventListener('enterFrame', this.followListener, false, 0, true);
+				_destX = evt.target.x - _offX;
+				_destY = evt.target.y - _offY;
+				_destZ = evt.target.z - _offZ;
+				Engine.stage.addEventListener('enterFrame', followListener, false, 0, true);
 			}
 		}
 		
@@ -261,20 +262,19 @@ package com.ice.core.base {
 		 * @private
 		 */
 		public function followListener(evt:Event) {
-			var dx:Number = this.destx - this.x;
-			var dy:Number = this.desty - this.y;		
-			var dz:Number = this.destz - this.z;
+			var dx:Number = _destX - this.x;
+			var dy:Number = _destY - this.y;		
+			var dz:Number = _destZ - this.z;
 			try {
-				this.moveTo(this.x + dx / this.elasticity, this.y + dy / this.elasticity, this.z + dz / this.elasticity);
+				this.moveTo(this.x + dx / _elasticity, this.y + dy / _elasticity, this.z + dz / _elasticity);
 			} catch(e:Error) {
 			}
 			
 			// Stop ?
 			if(dx < 1 && dx > -1 && dy < 1 && dy > -1 && dz < 1 && dz > -1) {
-				Engine.stage.removeEventListener('enterFrame',this.followListener);
+				Engine.stage.removeEventListener('enterFrame', followListener);
 			}
 		} 
-		
 		
 		/**
 		 * Returns the distance of this element to the given coordinate
@@ -294,7 +294,7 @@ package com.ice.core.base {
 			this.scene = null;
 			this._controller = null;
 			if(Engine.stage) 
-				Engine.stage.removeEventListener('enterFrame', this.followListener);
+				Engine.stage.removeEventListener('enterFrame', followListener);
 		}
 		
 		/** @private */

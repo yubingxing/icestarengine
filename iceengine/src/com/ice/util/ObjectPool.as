@@ -52,7 +52,7 @@ package com.ice.util {
 			var instances:Array = ObjectPool.classInstances[className];
 			
 			// Is it empty ? Then add one
-			if(instances.length==0) {
+			if(instances.length == 0) {
 				instances.push(new className());
 			}
 			

@@ -1,5 +1,6 @@
 // The Material Class provides an abstract interface between the Engine and the user defined materials
 package com.ice.core.base {
+	import com.ice.core.elements.Wall;
 	import com.ice.core.interfaces.IMaterial;
 	import com.ice.core.materials.ClipMaterial;
 	import com.ice.core.materials.DefaultMaterial;
@@ -12,6 +13,8 @@ package com.ice.core.base {
 	import com.ice.helpers.MaterialDefinition;
 	
 	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
+	import flash.geom.Rectangle;
 	import flash.utils.getDefinitionByName;
 	
 	// Imports
@@ -130,7 +133,7 @@ package com.ice.core.base {
 			if(!s) return null;
 			var r:Sprite = new Sprite();
 			r.addChild(s);
-			if(fromPlane && element is fWall)
+			if(fromPlane && element is Wall)
 				s.y = -height;
 			return r;
 		}
@@ -138,118 +141,112 @@ package com.ice.core.base {
 		/** @private */
 		public function getBump(element:RenderableElement, width:Number, height:Number, fromPlane:Boolean = false):DisplayObject {
 			var s:DisplayObject = this.cls.getBump(element, width, height);
-			if(!s) return null
-			var r:Sprite = new Sprite()
-			r.addChild(s)
-			if(fromPlane && element is fWall) s.y = -height
-			return r
+			if(!s) 
+				return null;
+			var r:Sprite = new Sprite();
+			r.addChild(s);
+			if(fromPlane && element is Wall) 
+				s.y = -height;
+			return r;
 		}
 		
 		/** @private */
-		public function getContours(element:RenderableElement,width:Number,height:Number):Array {
+		public function getContours(element:RenderableElement, width:Number, height:Number):Array {
 			
-			var t:Array = this.cls.getContours(element,width,height)
+			var t:Array = this.cls.getContours(element, width, height);
 			
 			// Adjust wall coordinates
-			if(element is fWall) {
-				var el:fWall = element as fWall
+			if(element is Wall) {
+				var el:Wall = element as Wall;
 				var tl:int = t.length
-				for(var i:int=0;i<tl;i++) {
-					var c:Array = t[i]
-					var cl:int = c.length
-					for(var j:int=0;j<cl;j++) {
-						c[j].y = el.pixelHeight-c[j].y
+				for(var i:int = 0; i < tl; i++) {
+					var c:Array = t[i];
+					var cl:int = c.length;
+					for(var j:int = 0; j < cl; j++) {
+						c[j].y = el.pixelHeight - c[j].y;
 					}
 				}	
 			}
-			
-			return t
+			return t;
 		}
 		
 		/** @private */
-		public function getHoles(element:RenderableElement,width:Number,height:Number):Array {
+		public function getHoles(element:RenderableElement, width:Number, height:Number):Array {
 			
-			var t:Array = this.cls.getHoles(element,width,height)
-			var ret:Array = []
+			var t:Array = this.cls.getHoles(element, width, height);
+			var ret:Array = [];
 			
 			
 			// Convert holes to wall coordinates
-			if(element is fWall) {
+			if(element is Wall) {
 				
-				var el:fWall = element as fWall
-				var tl:int = t.length 
-				for(c=0;c<tl;c++) {
-					mcontainer = t[c]
-					nobj = new PlaneBounds()
-					nobj.z = el.z+height-(mcontainer.y+mcontainer.height)
-					nobj.top = el.z+height-mcontainer.y
-					nobj.xrel = mcontainer.x
-					nobj.yrel = mcontainer.y
-					nobj.width = mcontainer.width
-					nobj.height = mcontainer.height
+				var el:Wall = element as Wall;
+				var tl:int = t.length; 
+				for(c=0; c < tl; c++) {
+					var mcontainer:Rectangle = t[c];
+					nobj = new PlaneBounds();
+					nobj.z = el.z + height - (mcontainer.y + mcontainer.height);
+					nobj.top = el.z + height - mcontainer.y;
+					nobj.xrel = mcontainer.x;
+					nobj.yrel = mcontainer.y;
+					nobj.width = mcontainer.width;
+					nobj.height = mcontainer.height;
 					
 					if(el.vertical) {
-						nobj.vertical = true
-						nobj.x = el.x
-						nobj.x0 = el.x
-						nobj.x1 = el.x
-						nobj.y = nobj.y0 = el.y+mcontainer.x
-						nobj.y1 = el.y+mcontainer.x+mcontainer.width
+						nobj.vertical = true;
+						nobj.x = el.x;
+						nobj.x0 = el.x;
+						nobj.x1 = el.x;
+						nobj.y = nobj.y0 = el.y + mcontainer.x;
+						nobj.y1 = el.y + mcontainer.x + mcontainer.width;
 					} else {
-						nobj.vertical = false
-						nobj.y = el.y
-						nobj.x = nobj.x0 = el.x+mcontainer.x
-						nobj.x1 = el.x+mcontainer.x+mcontainer.width
-						nobj.y0 = el.y
-						nobj.y1 = el.y
+						nobj.vertical = false;
+						nobj.y = el.y;
+						nobj.x = nobj.x0 = el.x + mcontainer.x;
+						nobj.x1 = el.x+mcontainer.x + mcontainer.width;
+						nobj.y0 = el.y;
+						nobj.y1 = el.y;
 					}
-					
-					block = this.cls.getHoleBlock(element,c)
-					if(block) {
-						block.x = nobj.xrel
-						block.y = nobj.yrel-height
-					}
-					ret[ret.length] = new Hole(c,nobj,block)
+					block = this.cls.getHoleBlock(element, c);
+					block.x = nobj.xrel;
+					block.y = nobj.yrel - height;
+					ret[ret.length] = new Hole(c, nobj, block);
 				}
-				
 			} else {
 				
 				// Convert holes to floor coordinates
 				
-				tl = t.length
-				for(var c:Number=0;c<tl;c++) {
-					var mcontainer:Rectangle = t[c]
-					var nobj:PlaneBounds = new PlaneBounds()
-					nobj.z = element.z
-					nobj.xrel = mcontainer.x
-					nobj.yrel = mcontainer.y
-					nobj.x0 = nobj.x = element.x+mcontainer.x
-					nobj.y0 = nobj.y = element.y+mcontainer.y-mcontainer.height
-					nobj.width = mcontainer.width
-					nobj.height = mcontainer.height
-					nobj.x1 = nobj.x0+nobj.width  
-					nobj.y1 = nobj.y0+nobj.height  
+				tl = t.length;
+				for(var c:Number = 0; c < tl; c++) {
+					var mcontainer:Rectangle = t[c];
+					var nobj:PlaneBounds = new PlaneBounds();
+					nobj.z = element.z;
+					nobj.xrel = mcontainer.x;
+					nobj.yrel = mcontainer.y;
+					nobj.x0 = nobj.x = element.x + mcontainer.x;
+					nobj.y0 = nobj.y = element.y + mcontainer.y - mcontainer.height;
+					nobj.width = mcontainer.width;
+					nobj.height = mcontainer.height;
+					nobj.x1 = nobj.x0 + nobj.width;
+					nobj.y1 = nobj.y0 + nobj.height;  
 					
-					var block:MovieClip = this.cls.getHoleBlock(element,c)
+					var block:MovieClip = this.cls.getHoleBlock(element, c);
 					if(block) {
-						block.x = nobj.xrel
-						block.y = nobj.yrel
+						block.x = nobj.xrel;
+						block.y = nobj.yrel;
 					}
-					ret[ret.length] = new Hole(c,nobj,block)
+					ret[ret.length] = new Hole(c, nobj, block);
 				}
 			}
-			
-			
-			return ret
+			return ret;
 		}
 		
 		/** @private */
 		public function dispose():void {
-			if(this.cls) this.cls.dispose()
-			this.cls = null
-			this.definition = null
+			if(this.cls) 
+				this.cls.dispose();
+			this.cls = null;
+			this.definition = null;
 		}
-		
 	}
-	
 }
