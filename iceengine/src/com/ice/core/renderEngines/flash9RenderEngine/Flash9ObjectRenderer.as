@@ -356,8 +356,8 @@ package com.ice.core.renderEngines.flash9RenderEngine {
 				 		// Create new value 
 				 		var ret = new fObjectProjection()
 				 		ret.polygon = fProjectionSolver.calculateProjection(x,y,z,this.element,floorz).contours[0]
-				 		ret.origin = new Point((ret.polygon[0].x+ret.polygon[1].x)/2,(ret.polygon[0].y+ret.polygon[1].y)/2)
-				 		ret.end = new Point((ret.polygon[2].x+ret.polygon[3].x)/2,(ret.polygon[2].y+ret.polygon[3].y)/2)
+				 		ret.origin = new Point((ret.polygon[0].x+ret.polygon[1].x) >> 1,(ret.polygon[0].y+ret.polygon[1].y) >> 1)
+				 		ret.end = new Point((ret.polygon[2].x+ret.polygon[3].x) >> 1,(ret.polygon[2].y+ret.polygon[3].y) >> 1)
 				 		ret.size = Point.distance(ret.origin,ret.end)
 				 		this.projectionCache.update(floorz,x,y,z,ret)
 	

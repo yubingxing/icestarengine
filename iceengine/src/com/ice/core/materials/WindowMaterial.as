@@ -1,4 +1,5 @@
 package com.ice.core.materials {
+	import flash.display.Sprite;
 
 		// Imports
 		
@@ -61,13 +62,13 @@ package com.ice.core.materials {
 				var nWindows:int = Math.floor(width/(this.wwidth+this.separation+this.framesize))
 				
 				// Calculate window vertical position
-				var range:Number = (height-this.wheight)/2
-				var vPosition:Number = Math.round((height/2)+(-range*this.position/100)-(this.wheight/2))
+				var range:Number = (height - this.wheight) >> 1;
+				var vPosition:Number = Math.round((height >> 1) + (-range * this.position / 100) - (this.wheight >> 1));
 				
 				// Generate window array
-				this.windows = new Array()
-				for(var j:Number=1;j<=nWindows;j++) {
-					this.windows[this.windows.length] = new Rectangle(j*width/(nWindows+1)-this.wwidth/2,vPosition,this.wwidth,this.wheight)
+				this.windows = [];
+				for(var j:Number = 1; j <= nWindows; j++) {
+					this.windows[this.windows.length] = new Rectangle(j * width / (nWindows + 1) - (this.wwidth >> 1), vPosition, this.wwidth, this.wheight);
 				}
 				
 			}

@@ -27,15 +27,15 @@ package com.ice.core.logic.collision.models {
 				 
 				 // Precalc top view
 				 this.baseTopView = new Array
-		 		 this.baseTopView[this.baseTopView.length] = (new Point(this._width/2,-this._depth/2))
-		 		 this.baseTopView[this.baseTopView.length] = (new Point(this._width/2,this._depth/2))
-		 		 this.baseTopView[this.baseTopView.length] = (new Point(-this._width/2,this._depth/2))
-		 		 this.baseTopView[this.baseTopView.length] = (new Point(-this._width/2,-this._depth/2))
+		 		 this.baseTopView[this.baseTopView.length] = (new Point(this._width >> 1, -(this._depth >> 1)));
+		 		 this.baseTopView[this.baseTopView.length] = (new Point(this._width >> 1, this._depth >> 1));
+		 		 this.baseTopView[this.baseTopView.length] = (new Point(-(this._width >> 1), this._depth >> 1));
+		 		 this.baseTopView[this.baseTopView.length] = (new Point(-(this._width >> 1), -(this._depth >> 1)));
 				 this.topView = new Array
-		 		 this.topView[this.topView.length] = (new Point(this._width/2,-this._depth/2))
-		 		 this.topView[this.topView.length] = (new Point(this._width/2,this._depth/2))
-		 		 this.topView[this.topView.length] = (new Point(-this._width/2,this._depth/2))
-		 		 this.topView[this.topView.length] = (new Point(-this._width/2,-this._depth/2))
+		 		 this.topView[this.topView.length] = (new Point(this._width >> 1, -(this._depth >> 1)));
+		 		 this.topView[this.topView.length] = (new Point(this._width >> 1, this._depth >> 1));
+		 		 this.topView[this.topView.length] = (new Point(-(this._width >> 1), this._depth >> 1));
+		 		 this.topView[this.topView.length] = (new Point(-(this._width >> 1), -(this._depth >> 1)));
 				 
 			}
 
@@ -86,7 +86,7 @@ package com.ice.core.logic.collision.models {
 		  * @return The desired radius
 		  */
 		  public function getRadius():Number {
-		  	return (Math.max(this._width,this._depth)/2)
+		  	return (Math.max(this._width,this._depth) >> 1)
 		  }
 
 			/** 
@@ -109,8 +109,8 @@ package com.ice.core.logic.collision.models {
 		  	var cos:Number = Math.cos(-this._orientation*Math.PI/180)
 			  var nx:Number = x*cos - y*sin
 			  var ny:Number = y*cos + x*sin
-			  var halfWidth = this._width/2
-			  var halfDepth = this._depth/2
+			  var halfWidth = this._width >> 1
+			  var halfDepth = this._depth >> 1
 
 		  	return (nx<=halfWidth && nx>=-halfWidth && ny<=halfDepth && ny>=-halfDepth)
 		  }

@@ -1,4 +1,5 @@
 package com.ice.core.materials {
+	import flash.display.BitmapData;
 
 		// Imports
 		
@@ -55,7 +56,7 @@ package com.ice.core.materials {
 				var ret:Sprite = new Sprite
 				var temp:Sprite = new Sprite
 
-				this.realPosition = (this.dwidth/2)+(width-this.dwidth)*(0.5+(this.position/200))
+				this.realPosition = (this.dwidth >> 1)+(width-this.dwidth)*(0.5+(this.position / 200))
 
 				// Draw base
 				var tile:fMaterial = fMaterial.getMaterial(this.definition.xmlData.base,element.scene)
@@ -66,10 +67,10 @@ package com.ice.core.materials {
 				temp.graphics.moveTo(0,0)
 				temp.graphics.lineTo(width,0)
 				temp.graphics.lineTo(width,height)
-				temp.graphics.lineTo(this.realPosition+this.dwidth/2,height)
-				temp.graphics.lineTo(this.realPosition+this.dwidth/2,height-this.dheight)
-				temp.graphics.lineTo(this.realPosition-this.dwidth/2,height-this.dheight)
-				temp.graphics.lineTo(this.realPosition-this.dwidth/2,height)
+				temp.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height)
+				temp.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height - this.dheight)
+				temp.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height - this.dheight)
+				temp.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height)
 				temp.graphics.lineTo(0,height)
 				temp.graphics.lineTo(0,0)
 				temp.graphics.endFill()				
@@ -82,17 +83,17 @@ package com.ice.core.materials {
 					base2.draw(tile.getDiffuse(element,width,height))
 					
 					var temp2:Sprite = new Sprite
-					temp2.graphics.beginBitmapFill(base2,null,true,true)
-					temp2.graphics.moveTo(this.realPosition+this.dwidth/2,height)
-					temp2.graphics.lineTo(this.realPosition+this.dwidth/2,height-this.dheight)
-					temp2.graphics.lineTo(this.realPosition-this.dwidth/2,height-this.dheight)
-					temp2.graphics.lineTo(this.realPosition-this.dwidth/2,height)
-					temp2.graphics.lineTo(this.realPosition-this.dwidth/2-framesize,height)
-					temp2.graphics.lineTo(this.realPosition-this.dwidth/2-framesize,height-this.dheight-framesize)
-					temp2.graphics.lineTo(this.realPosition+this.dwidth/2+framesize,height-this.dheight-framesize)
-					temp2.graphics.lineTo(this.realPosition+this.dwidth/2+framesize,height)
-					temp2.graphics.lineTo(this.realPosition+this.dwidth/2,height)
-					temp2.graphics.endFill()
+					temp2.graphics.beginBitmapFill(base2, null, true, true);
+					temp2.graphics.moveTo(this.realPosition + (this.dwidth >> 1), height);
+					temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height - this.dheight);
+					temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height - this.dheight);
+					temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height);
+					temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1) - framesize, height);
+					temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1) - framesize, height - this.dheight - framesize);
+					temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1) + framesize, height - this.dheight - framesize);
+					temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1) + framesize, height);
+					temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height);
+					temp2.graphics.endFill();
 					
 					// Use a dropShadow filter to add some thickness to the frame
 					var angle:Number = 225
@@ -105,7 +106,7 @@ package com.ice.core.materials {
 
 
 				// Merge layers
-			  var msk:BitmapData = new BitmapData(width,height,true,0x000000)
+			  var msk:BitmapData = new BitmapData(width, height, true, 0x000000);
 				msk.draw(temp)
 				msk.draw(temp2)
 				ret.addChild(new Bitmap(msk,"auto",true))
@@ -131,7 +132,7 @@ package com.ice.core.materials {
 				var ret:Sprite = new Sprite
 				var temp:Sprite = new Sprite
 
-				this.realPosition = (this.dwidth/2)+(width-this.dwidth)*(0.5+(this.position/200))
+				this.realPosition = (this.dwidth >> 1) + (width - this.dwidth) * (0.5 + (this.position / 200));
 
 				// Draw base
 				var tile:fMaterial = fMaterial.getMaterial(this.definition.xmlData.base,element.scene)
@@ -145,10 +146,10 @@ package com.ice.core.materials {
 					temp.graphics.moveTo(0,0)
 					temp.graphics.lineTo(width,0)
 					temp.graphics.lineTo(width,height)
-					temp.graphics.lineTo(this.realPosition+this.dwidth/2,height)
-					temp.graphics.lineTo(this.realPosition+this.dwidth/2,height-this.dheight)
-					temp.graphics.lineTo(this.realPosition-this.dwidth/2,height-this.dheight)
-					temp.graphics.lineTo(this.realPosition-this.dwidth/2,height)
+					temp.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height);
+					temp.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height - this.dheight);
+					temp.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height - this.dheight);
+					temp.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height);
 					temp.graphics.lineTo(0,height)
 					temp.graphics.lineTo(0,0)
 					temp.graphics.endFill()				
@@ -167,15 +168,15 @@ package com.ice.core.materials {
 						base2.draw(tb)
 					
 						temp2.graphics.beginBitmapFill(base2,null,true,true)
-						temp2.graphics.moveTo(this.realPosition+this.dwidth/2,height)
-						temp2.graphics.lineTo(this.realPosition+this.dwidth/2,height-this.dheight)
-						temp2.graphics.lineTo(this.realPosition-this.dwidth/2,height-this.dheight)
-						temp2.graphics.lineTo(this.realPosition-this.dwidth/2,height)
-						temp2.graphics.lineTo(this.realPosition-this.dwidth/2-framesize,height)
-						temp2.graphics.lineTo(this.realPosition-this.dwidth/2-framesize,height-this.dheight-framesize)
-						temp2.graphics.lineTo(this.realPosition+this.dwidth/2+framesize,height-this.dheight-framesize)
-						temp2.graphics.lineTo(this.realPosition+this.dwidth/2+framesize,height)
-						temp2.graphics.lineTo(this.realPosition+this.dwidth/2,height)
+						temp2.graphics.moveTo(this.realPosition + (this.dwidth >> 1), height);
+						temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height - this.dheight);
+						temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1),height - this.dheight);
+						temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height);
+						temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1) - framesize, height);
+						temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1) - framesize, height - this.dheight - framesize);
+						temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1) + framesize, height - this.dheight - framesize);
+						temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1) + framesize, height);
+						temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height);
 						temp2.graphics.endFill()
 					
 					}
@@ -189,11 +190,11 @@ package com.ice.core.materials {
 					var door:BitmapData = new BitmapData(this.dwidth,this.dheight,true,0x000000)
 					door.draw(tb)
 					temp2.graphics.beginBitmapFill(door,null,true,true)
-					temp2.graphics.moveTo(this.realPosition+this.dwidth/2,height)
-					temp2.graphics.lineTo(this.realPosition+this.dwidth/2,height-this.dheight)
-					temp2.graphics.lineTo(this.realPosition-this.dwidth/2,height-this.dheight)
-					temp2.graphics.lineTo(this.realPosition-this.dwidth/2,height)
-					temp2.graphics.endFill()
+					temp2.graphics.moveTo(this.realPosition + (this.dwidth >> 1), height);
+					temp2.graphics.lineTo(this.realPosition + (this.dwidth >> 1), height - this.dheight);
+					temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height - this.dheight);
+					temp2.graphics.lineTo(this.realPosition - (this.dwidth >> 1), height);
+					temp2.graphics.endFill();
 				}
 
 
@@ -223,8 +224,8 @@ package com.ice.core.materials {
 			*
 			*/
 			public function getHoles(element:fRenderableElement,width:Number,height:Number):Array {
-				this.realPosition = (this.dwidth/2)+(width-this.dwidth)*(0.5+(this.position/200))
-				return [ new Rectangle(this.realPosition-this.dwidth/2,height-this.dheight,this.dwidth,this.dheight)]
+				this.realPosition = (this.dwidth >> 1)+(width-this.dwidth)*(0.5+(this.position/200))
+				return [ new Rectangle(this.realPosition- (this.dwidth >> 1),height-this.dheight,this.dwidth,this.dheight)]
 			}
 
 			/** 

@@ -48,7 +48,7 @@ package com.ice.util {
 		public static function hollowCircle(target:Sprite,x:Number,y:Number,radius:Number,gapRadius:Number) {
 		
 		var theta = (45/180)*Math.PI
-		var ctrlRadius = radius/Math.cos(theta/2)
+		var ctrlRadius = radius/Math.cos(theta >> 1)
 		target.lineStyle()
 		target.moveTo(x+radius, y+0.1)
 		target.beginFill(0xff0000,100)
@@ -59,7 +59,7 @@ package com.ice.util {
 		for (var i = 0; i<8; i++) {
 		// increment our angles
 		angle += theta;
-		angleMid = angle-(theta/2);
+		angleMid = angle-(theta >> 1);
 		// calculate our control point
 		cx = x+Math.cos(angleMid)*(ctrlRadius);
 		cy = y+Math.sin(angleMid)*(ctrlRadius);
@@ -72,12 +72,12 @@ package com.ice.util {
 		
 		target.lineTo(x+gapRadius, y-0.1)
 		
-		var ctrlRadius = gapRadius/Math.cos(theta/2)
+		var ctrlRadius = gapRadius/Math.cos(theta >> 1)
 		
 		for (var i = 0; i<8; i++) {
 		// increment our angles
 		angle += theta;
-		angleMid = angle-(theta/2);
+		angleMid = angle-(theta >> 1);
 		// calculate our control point
 		cx = x+Math.cos(angleMid)*(ctrlRadius);
 		cy = y-Math.sin(angleMid)*(ctrlRadius);

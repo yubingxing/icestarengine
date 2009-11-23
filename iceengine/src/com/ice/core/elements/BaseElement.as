@@ -167,7 +167,7 @@ package com.ice.core.elements {
 			var tempSprite:MovieClip = objectPool.getInstanceOf(clase) as MovieClip
 			var w:Number = tempSprite.width
 			var h:Number = tempSprite.height
-			this.bounds2d = new Rectangle(-w/2,-h,w,h)
+			this.bounds2d = new Rectangle(-(w >> 1),-h,w,h)
 			objectPool.returnInstance(tempSprite)
 			
 			// Screen area

@@ -75,7 +75,7 @@ package com.ice.core.scene.initialize {
 		}
 		
 		private function part1Progress(evt:fProcessEvent):void {
-			this.scene.dispatchEvent(new fProcessEvent(fScene.LOADPROGRESS,evt.overall/2,fScene.LOADINGDESCRIPTION,evt.overall,evt.currentDescription))
+			this.scene.dispatchEvent(new fProcessEvent(fScene.LOADPROGRESS,evt.overall >> 1,fScene.LOADINGDESCRIPTION,evt.overall,evt.currentDescription))
 		}
 		
 		private function part1Complete(evt:Event):void {

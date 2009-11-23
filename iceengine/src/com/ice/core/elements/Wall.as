@@ -2,7 +2,8 @@
  * Wall 
  */
 package com.ice.core.elements {
-	import com.ice.core.Plane;
+	import com.ice.core.base.Plane;
+	import com.ice.core.base.PlaneBounds;
 	
 	// Imports
 	
@@ -27,7 +28,7 @@ package com.ice.core.elements {
 		/** @private */
 		public var height:Number;
 		/** @private */
-		public var bounds: fPlaneBounds;
+		public var bounds: PlaneBounds;
 		
 		// Public properties
 		
@@ -79,16 +80,16 @@ package com.ice.core.elements {
 			
 			if(this.vertical) {                                          // Position
 				this.x = scene.gridSize*this.i
-				this.y = scene.gridSize*(this.j+(this.size/2))
+				this.y = scene.gridSize*(this.j+(this.size >> 1))
 				this.y1 = scene.gridSize*(this.j+this.size)
 			} else {
-				this.x = scene.gridSize*(this.i+(this.size/2))
+				this.x = scene.gridSize*(this.i+(this.size >> 1))
 				this.x1 = scene.gridSize*(this.i+this.size)
 				this.y = scene.gridSize*this.j
 			}                                                                 
 			
 			// Bounds
-			this.bounds = new fPlaneBounds(this)
+			this.bounds = new PlaneBounds(this)
 			
 			if(this.vertical) {
 				var c1:Point = fScene.translateCoords(0,this.pixelSize,0)

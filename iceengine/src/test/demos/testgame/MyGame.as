@@ -126,7 +126,7 @@
 			if(controllerType == MyGame.MOUSE) this.hero = new ponchoMouseController()
 			else this.hero = new ponchoKeyboardController()
 			if(this.scene.all["Poncho"]) var poncho:fCharacter =  this.scene.all["Poncho"]
-			else poncho = this.scene.createCharacter("Poncho","FFCharacters_poncho",this.scene.width/2,this.scene.depth/2,this.scene.height-200)
+			else poncho = this.scene.createCharacter("Poncho","FFCharacters_poncho",this.scene.width >> 1,this.scene.depth >> 1,this.scene.height-200)
 			poncho.occlusion = 60
 			poncho.addEventListener(fCharacter.EVENT_IN, this.INlistener,false,0,true)
 			poncho.addEventListener(fCharacter.WALKOVER, this.walkOverListener,false,0,true)

@@ -62,7 +62,7 @@ package com.ice.core.bullet {
 			bullet.customData.pixelBitmap = new	Bitmap(this.pixelBitmapData);
 			bullet.container.addChild(bullet.customData.pixelBitmap);
 			bullet.customData.pixelBitmap.alpha = this.alpha;
-			bullet.customData.pixelBitmap.x = bullet.customData.pixelBitmap.y = -Math.round(this.size/2);
+			bullet.customData.pixelBitmap.x = bullet.customData.pixelBitmap.y = -Math.round(this.size >> 1);
 		}
 		
 		/** @private */

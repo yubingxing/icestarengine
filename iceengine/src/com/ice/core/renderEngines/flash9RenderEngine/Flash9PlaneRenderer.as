@@ -1129,7 +1129,7 @@
 			public override function updateOcclusion(character:fCharacter):void {
 					var spr:Sprite = this.occlusionSpots[character.uniqueId]
 					if(!spr) return
-					var p:Point = new Point(0,-character.height/2)
+					var p:Point = new Point(0,-(character.height >> 1));
 					p = character.container.localToGlobal(p)
 					p = this.occlusionLayer.globalToLocal(p)
 					spr.x = p.x

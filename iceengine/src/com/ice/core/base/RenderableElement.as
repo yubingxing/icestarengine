@@ -2,7 +2,9 @@
  * 基础渲染对象类 
  */
 package com.ice.core.base {
+	import flash.display.MovieClip;
 	import flash.events.Event;
+	import flash.geom.Rectangle;
 	
 	// Imports
 	
@@ -51,7 +53,7 @@ package com.ice.core.base {
 		 * can acces methods inside, nested clips or whatever.
 		 *
 		 * This property is null until the element's graphics have been created. This happens the first time the element scrolls into the viewport.
-		 * Listen to the <b>fRenderableElement.ASSETS_CREATED</b> event to know when this property exist.
+		 * Listen to the <b>fASSETS_CREATED</b> event to know when this property exist.
 		 *
 		 */
 		public var flashClip:MovieClip;
@@ -116,7 +118,7 @@ package com.ice.core.base {
 		public static const DEPTHCHANGE:String = "renderableElementDepthChange";
 		
 		/**
-		 * The fRenderableElement.SHOW constant defines the value of the 
+		 * The fSHOW constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>renderableElementShow</code> event.
 		 * The event is dispatched when the elements is shown via the show() method
 		 * 
@@ -125,7 +127,7 @@ package com.ice.core.base {
 		public static const SHOW:String = "renderableElementShow";
 		
 		/**
-		 * The fRenderableElement.HIDE constant defines the value of the 
+		 * The fHIDE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>renderableElementHide</code> event.
 		 * The event is dispatched when the elements is hidden via the hide() method
 		 * 
@@ -135,7 +137,7 @@ package com.ice.core.base {
 		
 		/**
 		 * @private
-		 * The fRenderableElement.ENABLE constant defines the value of the 
+		 * The fENABLE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>renderableElementEnable</code> event.
 		 * The event is dispatched when the elements's Mouse events are enabled
 		 * 
@@ -145,7 +147,7 @@ package com.ice.core.base {
 		
 		/**
 		 * @private
-		 * The fRenderableElement.DISABLE constant defines the value of the 
+		 * The fDISABLE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>renderableElementDisable</code> event.
 		 * The event is dispatched when the elements's Mouse events are disabled
 		 * 
@@ -154,7 +156,7 @@ package com.ice.core.base {
 		public static const DISABLE:String = "renderableElementDisable";
 		
 		/**
-		 * The fRenderableElement.ASSETS_CREATED constant defines the value of the 
+		 * The fASSETS_CREATED constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>renderableElementAssetsCreated</code> event.
 		 * The event is dispatched when the element scrolls into view for the first time and its graphic assets are created.
 		 * It is used to know when the flashClip property exists.
@@ -164,7 +166,7 @@ package com.ice.core.base {
 		public static const ASSETS_CREATED:String = "renderableElementAssetsCreated";
 		
 		/**
-		 * The fRenderableElement.ASSETS_DESTROYED constant defines the value of the 
+		 * The fASSETS_DESTROYED constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>renderableElementAssetsDestroyed</code> event.
 		 * The event is dispatched when the element scrolls out of view and fEngine.conserveMemory is set to true. When this shappens all assets are
 		 * destroyed and the flashClip property is nullified.
@@ -178,48 +180,48 @@ package com.ice.core.base {
 		
 		// Constructor
 		/** @private */
-		function RenderableElement(defObj:XML,scene:Scene,noDepthSort:Boolean=false):void {
+		function RenderableElement(defObj:XML, scene:Scene, noDepthSort:Boolean = false):void {
 			
 			// Previous
-			super(defObj,scene);
+			super(defObj, scene);
 			
 			// Lights enabled ?
 			var temp:XMLList = defObj.@receiveLights;
-			if(temp.length()==1) 
-				this.receiveLights = (temp.toString()=="true");
+			if(temp.length() == 1) 
+				this.receiveLights = (temp.toString() == "true");
 			
 			// Shadows enabled ?
 			temp = defObj.@receiveShadows;
-			if(temp.length()==1) 
-				this.receiveShadows = (temp.toString()=="true");
+			if(temp.length() == 1) 
+				this.receiveShadows = (temp.toString() == "true");
 			
 			// Projects shadow ?
 			temp = defObj.@castShadows;
-			if(temp.length()==1) 
-				this.castShadows = (temp.toString()=="true");
+			if(temp.length() == 1) 
+				this.castShadows = (temp.toString() == "true");
 			
 			// Solid ?
 			temp = defObj.@solid;
-			if(temp.length()==1) 
-				this.solid = (temp.toString()=="true");
+			if(temp.length() == 1) 
+				this.solid = (temp.toString() == "true");
 			
 			// Screen area
 			this.screenArea = this.bounds2d.clone();
-			this.screenArea.offsetPoint(Scene.translateCoords(this.x,this.y,this.z));			   
+			this.screenArea.offsetPoint(Scene.translateCoords(this.x, this.y, this.z));			   
 		}
 		
 		/**
 		 * Mouse management
 		 */
 		public function disableMouseEvents():void {
-			dispatchEvent(new Event(RenderableElement.DISABLE));
+			dispatchEvent(new Event(DISABLE));
 		}
 		
 		/**
 		 * Mouse management
 		 */
 		public function enableMouseEvents():void {
-			dispatchEvent(new Event(RenderableElement.ENABLE));
+			dispatchEvent(new Event(ENABLE));
 		}
 		
 		/**
@@ -228,7 +230,7 @@ package com.ice.core.base {
 		public function show():void {
 			if(!this._visible) {
 				this._visible = true;
-				dispatchEvent(new Event(RenderableElement.SHOW));
+				dispatchEvent(new Event(SHOW));
 			}
 		}
 		
@@ -252,13 +254,13 @@ package com.ice.core.base {
 				this.flashClip.gotoAndPlay(where);
 			else {
 				this.pendingDestiny = where;
-				this.removeEventListener(ASSETS_CREATED,this.delayedGotoAndStop);
-				this.addEventListener(ASSETS_CREATED,this.delayedGotoAndPlay);
+				this.removeEventListener(ASSETS_CREATED, this.delayedGotoAndStop);
+				this.addEventListener(ASSETS_CREATED, this.delayedGotoAndPlay);
 			}
 		}
 		
 		private function delayedGotoAndPlay(e:Event):void {
-			this.removeEventListener(ASSETS_CREATED,this.delayedGotoAndPlay);
+			this.removeEventListener(ASSETS_CREATED, this.delayedGotoAndPlay);
 			if(this.flashClip && this.pendingDestiny) this.flashClip.gotoAndPlay(this.pendingDestiny);
 		}
 		
@@ -271,14 +273,15 @@ package com.ice.core.base {
 			if(this.flashClip) this.flashClip.gotoAndStop(where);
 			else {
 				this.pendingDestiny = where;
-				this.removeEventListener(ASSETS_CREATED,this.delayedGotoAndPlay);
-				this.addEventListener(ASSETS_CREATED,this.delayedGotoAndStop);
+				this.removeEventListener(ASSETS_CREATED, this.delayedGotoAndPlay);
+				this.addEventListener(ASSETS_CREATED, this.delayedGotoAndStop);
 			}
 		}
 		
 		private function delayedGotoAndStop(e:Event):void {
-			this.removeEventListener(ASSETS_CREATED,this.delayedGotoAndStop);
-			if(this.flashClip && this.pendingDestiny) this.flashClip.gotoAndStop(this.pendingDestiny);
+			this.removeEventListener(ASSETS_CREATED, this.delayedGotoAndStop);
+			if(this.flashClip && this.pendingDestiny) 
+				this.flashClip.gotoAndStop(this.pendingDestiny);
 		}
 		
 		
@@ -289,8 +292,9 @@ package com.ice.core.base {
 		 *
 		 * @param param An optional extra parameter to pass to the function
 		 */
-		public function call(what:String, param:*=null):void {
-			if(this.flashClip) this.flashClip[what](param);
+		public function call(what:String, param:* = null):void {
+			if(this.flashClip)
+				this.flashClip[what](param);
 		}
 		
 		
@@ -306,41 +310,41 @@ package com.ice.core.base {
 		/**
 		 * Return the 2D distance from this element to any world coordinate
 		 */
-		public function distance2d(x:Number,y:Number,z:Number):Number {
-			var p2d:Point = Scene.translateCoords(x,y,z);
-			return this.distance2dScreen(p2d.x,p2d.y);
+		public function distance2d(x:Number, y:Number, z:Number):Number {
+			var p2d:Point = Scene.translateCoords(x, y, z);
+			return this.distance2dScreen(p2d.x, p2d.y);
 		}
 		
 		/**
 		 * Return the 2D distance from this element to any screen coordinate
 		 */
-		public function distance2dScreen(x:Number,y:Number):Number {
+		public function distance2dScreen(x:Number, y:Number):Number {
 			
 			// Characters move. Update their screen Area
-			if(this is fMovingElement) {
+			if(this is MovingElement) {
 				this.screenArea = this.bounds2d.clone();
-				this.screenArea.offsetPoint(Scene.translateCoords(this.x,this.y,this.z));
+				this.screenArea.offsetPoint(Scene.translateCoords(this.x, this.y, this.z));
 			}
 			
 			// Test bounds
 			var bounds:Rectangle = this.screenArea;
-			var pos2D:Point = new Point(x,y);
+			var pos2D:Point = new Point(x, y);
 			var dist:Number = Infinity;
-			if(bounds.contains(pos2D.x,pos2D.y)) 
+			if(bounds.contains(pos2D.x, pos2D.y)) 
 				return 0;
 			
-			var corner1:Point = new Point(bounds.left,bounds.top);
-			var corner2:Point = new Point(bounds.left,bounds.bottom);
-			var corner3:Point = new Point(bounds.right,bounds.bottom);
-			var corner4:Point = new Point(bounds.right,bounds.top);
+			var corner1:Point = new Point(bounds.left, bounds.top);
+			var corner2:Point = new Point(bounds.left, bounds.bottom);
+			var corner3:Point = new Point(bounds.right, bounds.bottom);
+			var corner4:Point = new Point(bounds.right, bounds.top);
 			
-			var d:Number = mathUtils.distancePointToSegment(corner1,corner2,pos2D);
+			var d:Number = mathUtils.distancePointToSegment(corner1, corner2, pos2D);
 			if(d<dist) dist = d;
-			d = mathUtils.distancePointToSegment(corner2,corner3,pos2D);
+			d = mathUtils.distancePointToSegment(corner2, corner3, pos2D);
 			if(d<dist) dist = d;
-			d = mathUtils.distancePointToSegment(corner3,corner4,pos2D);
+			d = mathUtils.distancePointToSegment(corner3, corner4, pos2D);
 			if(d<dist) dist = d;
-			d = mathUtils.distancePointToSegment(corner4,corner1,pos2D);
+			d = mathUtils.distancePointToSegment(corner4, corner1, pos2D);
 			if(d<dist) dist = d;
 			
 			return dist;

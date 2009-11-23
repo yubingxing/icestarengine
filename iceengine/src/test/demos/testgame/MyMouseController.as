@@ -102,7 +102,7 @@ package test.demos.testgame {
 					this.vy = 5*Math.sin(angleRad)
 					
 					// In a perfect world, I would program a jump animation for this. Now our hero just flies around
-					var vz:Number = (this.dz-this.character.z)/2
+					var vz:Number = (this.dz-this.character.z) >> 1
 					
 					if(vx!=0 || vy!=0 || vz!=0) this.character.moveTo(this.character.x+this.vx,this.character.y+this.vy,this.character.z+vz)			
 					

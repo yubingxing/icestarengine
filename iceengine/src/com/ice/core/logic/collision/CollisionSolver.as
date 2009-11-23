@@ -798,7 +798,7 @@ package com.ice.core.logic.collision {
 					
 					y = obj.y
 					x = obj.x
-					z = (obj.z+obj.top)/2
+					z = (obj.z+obj.top) >> 1;
 
 					// Loop through holes and find which one are we inside of
 					any = false

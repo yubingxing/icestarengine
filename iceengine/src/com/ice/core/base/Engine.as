@@ -115,7 +115,7 @@ package com.ice.core.base {
 		public static var stage:Stage;
 		
 		/**
-		 * The Engine.MEDIALOADPROGRESS constant defines the value of the 
+		 * The MEDIALOADPROGRESS constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>enginemedialoadprogress</code> event.
 		 * The event is dispatched when there is a progress in loading an external media file, allowing to update a progress bar, for example.
 		 * 
@@ -123,7 +123,7 @@ package com.ice.core.base {
 		public static const MEDIALOADPROGRESS:String = "enginemedialoadprogress";
 		
 		/**
-		 * The Engine.MEDIALOADCOMPLETE constant defines the value of the 
+		 * The MEDIALOADCOMPLETE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>enginemedialoadcomplete</code> event.
 		 * The event is dispatched when the external media file finishes loading.
 		 * 
@@ -131,7 +131,7 @@ package com.ice.core.base {
 		public static const MEDIALOADCOMPLETE:String = "enginemedialoadcomplete";
 		
 		/**
-		 * The Engine.MEDIALOADERROR constant defines the value of the 
+		 * The MEDIALOADERROR constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>enginemedialoaderror</code> event.
 		 * The event is dispatched when the external media file is not loaded.
 		 * 
@@ -213,9 +213,9 @@ package com.ice.core.base {
 			currentScene = null;
 			
 			// Arrg dirty trick !! So I have access to onenterframe events from anywhere in the engine
-			if(!Engine.stage) {
+			if(!stage) {
 				if(container.stage)
-					Engine.stage = container.stage;
+					stage = container.stage;
 				else 
 					container.addEventListener(Event.ADDED_TO_STAGE, _getStage);
 			}
@@ -226,7 +226,7 @@ package com.ice.core.base {
 		// Retrieves stage
 		private function _getStage(e:Event):void {
 			var s:Sprite = Sprite(e.target);
-			Engine.stage = s.stage;
+			stage = s.stage;
 			s.removeEventListener(Event.ADDED_TO_STAGE, _getStage);
 		}
 		
@@ -236,7 +236,7 @@ package com.ice.core.base {
 		 * control the process. The class checks if the media is already loaded to avoid duplicate loads.
 		 *
 		 * <p><b>WARNING !</b> If you want to use the engine from within an Adobe AIR application, make sure to execute this
-		 * line: <b>Engine.context.allowLoadBytesCodeExecution = true</b> before creating an scene. Otherwise assets won't load
+		 * line: <b>context.allowLoadBytesCodeExecution = true</b> before creating an scene. Otherwise assets won't load
 		 * into the application security domain and won't work.</p>
 		 *
 		 * @param src Path to the swf file you want to load
@@ -262,11 +262,11 @@ package com.ice.core.base {
 					cLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, _loadComplete, false, 0, true);
 					cLoader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, _loadProgress, false, 0, true);
 					cLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, _loadError, false, 0, true);
-					cLoader.load(new URLRequest(src), Engine.context);
+					cLoader.load(new URLRequest(src), context);
 				}
 			} else {
 				// Already loaded
-				dispatchEvent(new Event(Engine.MEDIALOADCOMPLETE));
+				dispatchEvent(new Event(MEDIALOADCOMPLETE));
 			}
 		}
 		
@@ -275,7 +275,7 @@ package com.ice.core.base {
 			event.target.removeEventListener(Event.COMPLETE, _loadBytesComplete);
 			event.target.removeEventListener(ProgressEvent.PROGRESS, _loadBytesProgress);
 			event.target.removeEventListener(IOErrorEvent.IO_ERROR , _loadBytesError);
-			dispatchEvent(new Event(Engine.MEDIALOADERROR));
+			dispatchEvent(new Event(MEDIALOADERROR));
 		}
 		
 		private function _loadBytesComplete(event:Event):void {
@@ -284,11 +284,11 @@ package com.ice.core.base {
 			event.target.removeEventListener(IOErrorEvent.IO_ERROR , _loadBytesError);
 			var cLoader:Loader = new Loader();
 			cLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, _loadComplete, false, 0, true);
-			cLoader.loadBytes(event.target.data, Engine.context);
+			cLoader.loadBytes(event.target.data, context);
 		}
 		
 		private function _loadBytesProgress(event:ProgressEvent):void {
-			var ret:ProgressEvent = new ProgressEvent(Engine.MEDIALOADPROGRESS);
+			var ret:ProgressEvent = new ProgressEvent(MEDIALOADPROGRESS);
 			ret.bytesLoaded = event.bytesLoaded;
 			ret.bytesTotal = event.bytesTotal;
 			dispatchEvent(ret);
@@ -300,18 +300,18 @@ package com.ice.core.base {
 			event.target.removeEventListener(Event.COMPLETE, _loadComplete);
 			event.target.removeEventListener(ProgressEvent.PROGRESS, _loadProgress);
 			event.target.removeEventListener(IOErrorEvent.IO_ERROR , _loadError);
-			dispatchEvent(new Event(Engine.MEDIALOADERROR));
+			dispatchEvent(new Event(MEDIALOADERROR));
 		}
 		
 		private function _loadComplete(event:Event):void {
 			event.target.removeEventListener(Event.COMPLETE, _loadComplete);
 			event.target.removeEventListener(ProgressEvent.PROGRESS, _loadProgress);
 			event.target.removeEventListener(IOErrorEvent.IO_ERROR, _loadError);
-			dispatchEvent(new Event(Engine.MEDIALOADCOMPLETE));
+			dispatchEvent(new Event(MEDIALOADCOMPLETE));
 		}
 		
 		private function _loadProgress(event:ProgressEvent):void {
-			var ret:ProgressEvent = new ProgressEvent(Engine.MEDIALOADPROGRESS);
+			var ret:ProgressEvent = new ProgressEvent(MEDIALOADPROGRESS);
 			ret.bytesLoaded = event.bytesLoaded;
 			ret.bytesTotal = event.bytesTotal;
 			dispatchEvent(ret);
@@ -361,7 +361,7 @@ package com.ice.core.base {
 		}
 		
 		/**
-		 * Makes visible one scene in the Engine. Only one scene can be visible at the same time.
+		 * Makes visible one scene in the  Only one scene can be visible at the same time.
 		 * The currentScene visible scene, if any, will me moved to the invisible scene list.<br>
 		 * Showing an scene does not enable it
 		 *
@@ -388,13 +388,13 @@ package com.ice.core.base {
 		 * If you hide an scene all the Sprites and graphic resources are destroyed, and so are Mouse Events attached to them. You will need
 		 * to reset the events if the scene is shown again.
 		 *
-		 * <p><b>IMPORTANT!</b>: Hidden _scenes still consume memory. If you want to free all resources allocated by _scenes that will no longer be used, use the Engine.destroy() method.</p>
+		 * <p><b>IMPORTANT!</b>: Hidden _scenes still consume memory. If you want to free all resources allocated by _scenes that will no longer be used, use the destroy() method.</p>
 		 *
 		 * @param sc The fScene you want to hide
 		 * @param destroyRender Pass false if you don't want the rendering to be destroyed when you hide the scene. By doing this, the graphics are already available when the scene is shown again
 		 */
 		public function hideScene(sc:Scene, destroyRender:Boolean = true):void {
-			if(currentScene==sc) {
+			if(currentScene == sc) {
 				if(destroyRender) 
 					currentScene.stopRendering();
 				container.removeChild(currentScene.container);
@@ -411,18 +411,18 @@ package com.ice.core.base {
 		 * in realtime
 		 */			 
 		public static function get bumpMapping():Boolean {
-			return Engine._bumpMapping;
+			return _bumpMapping;
 		}
 		
 		public static function set bumpMapping(bmp:Boolean):void {
-			Engine._bumpMapping = bmp;
+			_bumpMapping = bmp;
 			
 			// Update _scenes
-			for(var i:Number = 0; i < _engines.length; i++) {
+			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
 				var e:Engine = _engines[i];
 				if(e.currentScene) e.currentScene.render();
 			}
-		}			 
+		}	 
 		
 		/**
 		 * This property enables/disables shadow projection of objects
@@ -435,7 +435,7 @@ package com.ice.core.base {
 			_objectShadows = shd;
 			
 			// Update _scenes
-			for(var i:Number = 0; i < _engines.length; i++) {
+			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
 				
 				var e:Engine = _engines[i];
 				if(e.currentScene) {
@@ -458,7 +458,7 @@ package com.ice.core.base {
 			_characterShadows = shd;
 			
 			// Update _scenes
-			for(var i:Number = 0; i < _engines.length; i++) {
+			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
 				
 				var e:Engine = _engines[i];
 				if(e.currentScene) {
@@ -481,8 +481,7 @@ package com.ice.core.base {
 			_shadowQuality = shd;
 			
 			// Update scenes
-			for(var i:Number = 0; i < _engines.length; i++) {
-				
+			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
 				var e:Engine = _engines[i];
 				if(e.currentScene) {
 					e.currentScene.resetShadows();

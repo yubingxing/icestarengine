@@ -515,7 +515,7 @@ package com.ice.core.logic.coverage {
 				 if(poly1==null) return Coverage.NOT_SHADOWED
 				 
 				 // Check fCollision
-				 var result:Boolean = ((mathUtils.segmentsIntersect(to.x0,to.y,to.x1,to.y,from.x,from.y,(poly1[2].x+poly1[3].x)/2,(poly1[2].y+poly1[3].y)/2)!=null) ||
+				 var result:Boolean = ((mathUtils.segmentsIntersect(to.x0,to.y,to.x1,to.y,from.x,from.y,(poly1[2].x+poly1[3].x) >> 1,(poly1[2].y+poly1[3].y) >> 1)!=null) ||
 				 											 (mathUtils.segmentsIntersect(to.x0,to.y,to.x1,to.y,poly1[0].x,poly1[0].y,poly1[3].x,poly1[3].y)!=null) ||
 				 											 (mathUtils.segmentsIntersect(to.x0,to.y,to.x1,to.y,poly1[1].x,poly1[1].y,poly1[2].x,poly1[2].y)!=null))
 				                      
@@ -539,7 +539,7 @@ package com.ice.core.logic.coverage {
 				 if(poly1==null) return Coverage.NOT_SHADOWED
 				 
 				 // Check fCollision
-				 var result:Boolean = ((mathUtils.segmentsIntersect(to.x,to.y0,to.x,to.y1,from.x,from.y,(poly1[2].x+poly1[3].x)/2,(poly1[2].y+poly1[3].y)/2)!=null) ||
+				 var result:Boolean = ((mathUtils.segmentsIntersect(to.x,to.y0,to.x,to.y1,from.x,from.y,(poly1[2].x+poly1[3].x) >> 1,(poly1[2].y+poly1[3].y) >> 1)!=null) ||
 				                       (mathUtils.segmentsIntersect(to.x,to.y0,to.x,to.y1,poly1[0].x,poly1[0].y,poly1[3].x,poly1[3].y)!=null) ||
 				                       (mathUtils.segmentsIntersect(to.x,to.y0,to.x,to.y1,poly1[1].x,poly1[1].y,poly1[2].x,poly1[2].y)!=null))
 				

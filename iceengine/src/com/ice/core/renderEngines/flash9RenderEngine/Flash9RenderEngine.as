@@ -288,8 +288,8 @@
 						var rect:Rectangle = new Rectangle()
 						rect.width = this.viewWidth
 						rect.height = this.viewHeight
-						rect.x = Math.round(-this.viewWidth/2+p.x)
-						rect.y = Math.round(-this.viewHeight/2+p.y)
+						rect.x = Math.round(-(this.viewWidth >> 1)+p.x)
+						rect.y = Math.round(-(this.viewHeight >> 1)+p.y)
 						this.container.scrollRect = rect
 					} else {
 						this.container.scrollRect = null
