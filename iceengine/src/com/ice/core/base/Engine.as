@@ -418,7 +418,8 @@ package com.ice.core.base {
 			_bumpMapping = bmp;
 			
 			// Update _scenes
-			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
+			var n:int = _engines.length;
+			for(var i:int = 0; i < n; i++) {
 				var e:Engine = _engines[i];
 				if(e.currentScene) e.currentScene.render();
 			}
@@ -435,7 +436,8 @@ package com.ice.core.base {
 			_objectShadows = shd;
 			
 			// Update _scenes
-			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
+			var n:int = _engines.length;
+			for(var i:int = 0; i < n; i++) {
 				
 				var e:Engine = _engines[i];
 				if(e.currentScene) {
@@ -458,7 +460,8 @@ package com.ice.core.base {
 			_characterShadows = shd;
 			
 			// Update _scenes
-			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
+			var n:int = _engines.length;
+			for(var i:int = 0; i < n; i++) {
 				
 				var e:Engine = _engines[i];
 				if(e.currentScene) {
@@ -481,7 +484,8 @@ package com.ice.core.base {
 			_shadowQuality = shd;
 			
 			// Update scenes
-			for(var i:int = 0, n:int = _engines.length; i < n; i++) {
+			var n:int = _engines.length;
+			for(var i:int = 0; i < n; i++) {
 				var e:Engine = _engines[i];
 				if(e.currentScene) {
 					e.currentScene.resetShadows();
