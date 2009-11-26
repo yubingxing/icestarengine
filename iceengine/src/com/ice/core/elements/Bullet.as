@@ -2,11 +2,12 @@
  * base bullet element class
  */
 package com.ice.core.elements {
-	import com.ice.core.RenderableElement;
-	import com.ice.core.Scene;
+	import com.ice.core.base.RenderableElement;
+	import com.ice.core.base.Scene;
 	import com.ice.core.events.ShotEvent;
 	import com.ice.core.interfaces.IElementController;
 	import com.ice.core.interfaces.IMovingElement;
+	import com.ice.core.logic.sight.LineOfSightSolver;
 	import com.ice.util.ds.CoordinateOccupant;
 	
 	import flash.events.Event;
@@ -29,14 +30,14 @@ package com.ice.core.elements {
 	 * being created and destroyed. The engine uses an object pool to reuse "dead" bullets and minimize the amount of new() calls. This
 	 * is transparent to you but I think this information can help tracking weird bugs</p>
 	 *
-	 * @see org.ffilmation.engine.core.Scene#createBullet()
+	 * @see org.ice.core.base.Scene#createBullet()
 	 */
 	public class Bullet extends RenderableElement implements IMovingElement {
 		
 		// Constants
 		
 		/**
-		 * The fBullet.SHOT constant defines the value of the 
+		 * The fSHOT constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>bulletshot</code> event.
 		 * The event is dispatched by solid elements when they receive a bullet impact and also by the bullet itself, so you
 		 * can capture it where it fits you the most
@@ -46,7 +47,7 @@ package com.ice.core.elements {
 		public static const SHOT:String = "bulletshot";
 		
 		/**
-		 * The fBullet.SHOTTHROUGH constant defines the value of the 
+		 * The fSHOTTHROUGH constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>bulletshotthrough</code> event.
 		 * The event is dispatched by non-solid elements when they receive a bullet impact (which for non-solid elements will continue
 		 * its path ) and also by the bullet itself, so you can capture it where it fits you the most
@@ -70,7 +71,7 @@ package com.ice.core.elements {
 		/** @private */
 		function Bullet(scene:Scene):void {
 			// Previous. no real XML is needed for bullets
-			super(<bullet/>,scene);
+			super(<bullet/>, scene);
 			
 			// Overwrite properties that don't apply to bullets
 			this.receiveLights = false;
@@ -83,53 +84,56 @@ package com.ice.core.elements {
 		 * Main control loop for bullets
 		 * @private
 		 */
-		public function control(evt:Event):void {
+		public function control(event:Event):void {
 			// Apply speed
-			var nx:Number = this.x+this.speedx;
-			var ny:Number = this.y+this.speedy;
-			var nz:Number = this.z+this.speedz;
+			var nx:Number = this.x + this.speedx;
+			var ny:Number = this.y + this.speedy;
+			var nz:Number = this.z + this.speedz;
 			
 			// See if we collided against something. If we did, apply new coordinates
-			var inFront:Array = fLineOfSightSolver.calculateLineOfSight(this.scene, this.x, this.y, this.z, nx, ny, nz);
+			var inFront:Array = LineOfSightSolver.calculateLineOfSight(this.scene, this.x, this.y, this.z, nx, ny, nz);
 			var any:RenderableElement = null;
 			
-			for(var i:Number = 0; any == null && inFront && i < inFront.length; i++) {
-				var oc:CoordinateOccupant = inFront[i];
-				if(!oc.element.solid) {
+			var n:int = inFront.length;
+			var co:CoordinateOccupant;
+			var evt2:ShotEvent;
+			for(var i:Number = 0; any == null && inFront && i < n; i++) {
+				co = inFront[i];
+				if(!co.element.solid) {
 					// Shot non-solid
-					var evt2:ShotEvent = new ShotEvent(Bullet.SHOT_THROUGH, this, oc.element, oc.coordinate);
+					evt2 = new ShotEvent(SHOT_THROUGH, this, co.element, co.coordinate);
 					this.dispatchEvent(evt2);
-					oc.element.dispatchEvent(evt2);
+					co.element.dispatchEvent(evt2);
 				} else {
 					// Shot solid
-					any = oc.element;
-					nx = oc.coordinate.x;
-					ny = oc.coordinate.y;
-					nz = oc.coordinate.z;
+					any = co.element;
+					nx = co.coordinate.x;
+					ny = co.coordinate.y;
+					nz = co.coordinate.z;
 					if(this.speedx > 0) 
-						nx-=0.1; 
+						nx -= 0.1; 
 					else 
-						nx+=0.1;
+						nx += 0.1;
 					if(this.speedy > 0) 						
-						ny-=0.1; 
+						ny -= 0.1; 
 					else 
-						ny+=0.1;
+						ny += 0.1;
 					if(this.speedz > 0) 
-						nz-=0.1; 
+						nz -= 0.1; 
 					else 
-						nz+=0.1;
+						nz += 0.1;
 				}
 			}
 			
 			// Move bullet to new position
-			this.moveTo(nx,ny,nz);
+			this.moveTo(nx, ny, nz);
 			
 			// If we collided against something
-			if(any!=null) {
+			if(any != null) {
 				// Generate event
-				evt2 = new ShotEvent(Bullet.SHOT, this, oc.element, oc.coordinate);
+				evt2 = new ShotEvent(SHOT, this, co.element, co.coordinate);
 				this.dispatchEvent(evt2);
-				oc.element.dispatchEvent(evt2);
+				co.element.dispatchEvent(evt2);
 			}
 		}
 		

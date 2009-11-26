@@ -1,9 +1,9 @@
 // LIGHT
 
 package com.ice.core.base {
+	// Imports
 	import flash.geom.ColorTransform;
 	
-	// Imports
 	
 	
 	/**
@@ -54,35 +54,35 @@ package com.ice.core.base {
 		public var removed:Boolean = false;
 		
 		/**
-		 * The Light.RENDER constant defines the value of the 
+		 * The RENDER constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>lightrender</code> event.
 		 * The event is dispatched when the light is rendered
 		 */
 		public static const RENDER:String = "lightrender";
 		
 		/**
-		 * The Light.INTENSITYCHANGE constant defines the value of the 
+		 * The INTENSITYCHANGE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>lightintensitychange</code> event.
 		 * The event is dispatched when the light changes its intensity
 		 */
 		public static const INTENSITYCHANGE:String = "lightintensitychange";
 		
 		/**
-		 * The Light.COLORCHANGE constant defines the value of the 
+		 * The COLORCHANGE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>lightcolorchange</code> event.
 		 * The event is dispatched when the light changes its color
 		 */
 		public static const COLORCHANGE:String = "lightcolorchange";
 		
 		/**
-		 * The Light.SIZECHANGE constant defines the value of the 
+		 * The SIZECHANGE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>lightsizechange</code> event.
 		 * The event is dispatched when the light changes its size
 		 */
 		public static const SIZECHANGE:String = "lightsizechange";
 		
 		/**
-		 * The Light.DECAYCHANGE constant defines the value of the 
+		 * The DECAYCHANGE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>lightdecaychange</code> event.
 		 * The event is dispatched when the light changes its decay
 		 */
@@ -114,11 +114,9 @@ package com.ice.core.base {
 			// Light color
 			temp = defObj.@color;
 			if(temp.length()>0) {
-				
 				// Color transform object (100% light)
 				var col:String = temp.toString();
-				this.hexcolor = parseInt(col.substring(1),16);
-				
+				this.hexcolor = parseInt(col.substring(1), 16);
 			} else {
 				// Defaults to white light			   
 				this.hexcolor = 0xffffff;
@@ -126,12 +124,14 @@ package com.ice.core.base {
 			
 			// Intensity ( percentage from black to this.lightColor ) 
 			temp = defObj.@intensity;
-			if(temp.length()>0) this._intensity = new Number(temp);
-			else this._intensity = 0;
+			if(temp.length() > 0) 
+				this._intensity = new Number(temp);
+			else 
+				this._intensity = 0;
 			
 			// Decay ( where does start to fade ) 
 			temp = defObj.@decay;
-			if(temp.length()>0) 
+			if(temp.length() > 0) 
 				_decay = new Number(temp);
 			else 
 				_decay = 0;
@@ -152,8 +152,8 @@ package com.ice.core.base {
 		
 		/** @private */
 		public function set intensity(percent:Number):void {
-			this._intensity = Math.max(0,Math.min(percent,100));
-			this.dispatchEvent(new Event(Light.INTENSITYCHANGE));
+			this._intensity = Math.max(0, Math.min(percent, 100));
+			this.dispatchEvent(new Event(INTENSITYCHANGE));
 		}
 		
 		
@@ -175,7 +175,7 @@ package com.ice.core.base {
 			//模拟颜色，加速算法
 			this.lightColor = new ColorTransform(r >> 8, g >> 8, b >> 8, 1, 0, 0, 0, 0);
 			
-			this.dispatchEvent(new Event(Light.COLORCHANGE));
+			this.dispatchEvent(new Event(COLORCHANGE));
 		}
 		
 		/** Radius of the sphere that identifies the light, a value of 0 creates a light of Infinite size (ex: The Sun) */
@@ -188,7 +188,7 @@ package com.ice.core.base {
 			_size = Math.max(0,s);
 			if(_size == 0) 
 				_size = Infinity;			   
-			this.dispatchEvent(new Event(Light.SIZECHANGE))；
+			this.dispatchEvent(new Event(SIZECHANGE))；
 		}
 		
 		
@@ -200,7 +200,7 @@ package com.ice.core.base {
 		/** @private */
 		public function set decay(d:Number):void {
 			_decay = Math.max(0, Math.min(d, 100));
-			this.dispatchEvent(new Event(Light.DECAYCHANGE));
+			this.dispatchEvent(new Event(DECAYCHANGE));
 		}
 		
 		/**
@@ -208,7 +208,7 @@ package com.ice.core.base {
 		 */
 		public function render():void {
 			this.cell = this.scene.translateToCell(this.x, this.y, this.z);
-			this.dispatchEvent(new Event(Light.RENDER));
+			this.dispatchEvent(new Event(RENDER));
 		}
 		
 		/** @private */

@@ -2,90 +2,106 @@
 
 package com.ice.core.base {
 	// Imports
+	import com.ice.core.elements.Bullet;
+	import com.ice.core.elements.Character;
+	import com.ice.core.elements.EmptySprite;
+	import com.ice.core.elements.OmniLight;
+	import com.ice.core.interfaces.IRenderEngine;
 	import com.ice.core.interfaces.ISceneController;
+	import com.ice.core.interfaces.ISceneRetriever;
+	import com.ice.core.renderEngines.flash9RenderEngine.Flash9RenderEngine;
+	import com.ice.core.scene.initialize.SceneInitializer;
+	import com.ice.core.scene.initialize.SceneResourceManager;
+	import com.ice.core.scene.logic.CharacterSceneLogic;
+	import com.ice.core.scene.logic.LightSceneLogic;
+	import com.ice.core.scene.logic.SceneRenderManager;
+	import com.ice.profiler.Profiler;
+	import com.ice.util.rtree.RTree;
 	
+	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
-
+	
 	
 	
 	/**
-	 * <p>The fScene class provides control over a scene in your application. The API for this object is used to add and remove 
+	 * <p>The Scene class provides control over a scene in your application. The API for this object is used to add and remove 
 	 * elements from the scene after it has been loaded, and managing cameras.</p>
 	 *
 	 * <p>Moreover, you can get information on topology, visibility from one point to another, search for paths and other useful
 	 * methods that will help, for example, in programming AIs that move inside the scene.</p>
 	 *
-	 * <p>The data structures contained within this object are populated during initialization by the fSceneInitializer class (which you don't need to understand).</p>
+	 * <p>The data structures contained within this object are populated during initialization by the SceneInitializer class (which you don't need to understand).</p>
 	 *
 	 */
 	public class Scene extends EventDispatcher {
 		
 		// This counter is used to generate unique scene Ids
-		private static var count:Number = 0
+		private static var count:Number = 0;
 		
 		// This flag is set by the editor so every object is created as a character and can be moved ( so ugly I know but It does work )
 		/** @private */
-		public static var allCharacters:Boolean = false
+		public static var allCharacters:Boolean = false;
 		
 		// Private properties
 		
 		// 1. References
 		
-		private var _controller:ISceneController = null
+		private var _controller:ISceneController = null;
 		/** @private */
-		public var prof:fProfiler = null										// Profiler
-		private var initializer:fSceneInitializer						// This scene's initializer
+		public var prof:Profiler = null;										// Profiler
+		private var initializer:SceneInitializer;						// This scene's initializer
 		/** @private */
-		public var renderEngine:fEngineRenderEngine					// The render engine
+		public var renderEngine:IRenderEngine;					// The render engine
 		/** @private */
-		public var renderManager:fSceneRenderManager				// The render manager
+		public var renderManager:SceneRenderManager;				// The render manager
 		/** @private */
-		public var engine:Engine
+		public var engine:Engine;
 		/** @private */
-		public var _orig_container:Sprite  		  						// Backup reference
+		public var _orig_container:Sprite;  		  						// Backup reference
 		
 		// 2. Geometry and sizes
 		
 		/** @private */
-		public var viewWidth:Number													// Viewport size
+		public var viewWidth:Number;													// Viewport size
 		/** @private */
-		public var viewHeight:Number												// Viewport size
+		public var viewHeight:Number;												// Viewport size
 		/** @private */
-		public var top:Number																// Highest Z in the scene
+		public var top:Number;																// Highest Z in the scene
 		/** @private */
-		public var gridWidth:int														// Grid size in cells
+		public var gridWidth:int;														// Grid size in cells
 		/** @private */
-		public var gridDepth:int
+		public var gridDepth:int;
 		/** @private */
-		public var gridHeight:int
+		public var gridHeight:int;
 		/** @private */
-		public var gridSize:int		           								// Grid size ( in pixels )
+		public var gridSize:int;		           								// Grid size ( in pixels )
 		/** @private */
-		public var levelSize:int	          								// Vertical grid size ( along Z axis, in pixels )
+		public var levelSize:int;	          								// Vertical grid size ( along Z axis, in pixels )
 		/** @private */
-		public var sortCubeSize:int	=	Engine.SORTCUBESIZE	// Sorting cube size
+		public var sortCubeSize:int	= Engine.SORTCUBESIZE;	// Sorting cube size
 		
 		// 3. zSort
 		
 		/** @private */
-		public var grid:Array                 						  // The grid
+		public var grid:Array;                 						  // The grid
 		/** @private */
-		public var allUsedCells:Array                 			
+		public var allUsedCells:Array;                 			
 		/** @private */
-		public var sortAreas:Array													// zSorting generates this. This array points to contiguous spaces sharing the same zIndex
+		public var sortAreas:Array;													// zSorting generates this. This array points to contiguous spaces sharing the same zIndex
 		// It is used to find the proper zIndex for a cell
 		/** @private */
-		public var sortAreasRTree:fRTree										// This tree is used to search sortAreas efficiently
+		public var sortAreasRTree:RTree;										// This tree is used to search sortAreas efficiently
 		
 		/** @private */
-		public var allStatic2D:Array												// This provides fast 2D searches in the static elements
+		public var allStatic2D:Array;												// This provides fast 2D searches in the static elements
 		/** @private */
-		public var allStatic2DRTree:fRTree
+		public var allStatic2DRTree:RTree;
 		
 		/** @private */
-		public var allStatic3D:Array												// This provides fast 3D searches in the static elements
+		public var allStatic3D:Array;												// This provides fast 3D searches in the static elements
 		/** @private */
-		public var allStatic3DRTree:fRTree
+		public var allStatic3DRTree:RTree;
 		
 		
 		
@@ -93,13 +109,13 @@ package com.ice.core.base {
 		// 4. Resources
 		
 		/** @private */
-		public var resourceManager:fSceneResourceManager		// The resource manager stores all definitions loaded for this scene
+		public var resourceManager:SceneResourceManager;		// The resource manager stores all definitions loaded for this scene
 		
 		// 5.Status			
 		
 		/** @private */
-		public var IAmBeingRendered:Boolean = false					// If this scene is actually being rendered
-		private var _enabled:Boolean												// Is the scene enabled ?
+		public var IAmBeingRendered:Boolean = false;					// If this scene is actually being rendered
+		private var _enabled:Boolean;												// Is the scene enabled ?
 		
 		
 		// Public properties
@@ -107,104 +123,104 @@ package com.ice.core.base {
 		/** 
 		 * Every Scene is automatically assigned and ID
 		 */
-		public var id:String																
+		public var id:String;															
 		
 		/**
 		 * The camera currently in use, if any
 		 */
-		public var currentCamera:Camera
+		public var currentCamera:Camera;
 		
 		/** 
 		 * Were this scene is drawn
 		 */
-		public var container:Sprite		          						
+		public var container:Sprite;          						
 		
 		/**
 		 * An string indicating the scene's current status
 		 */
-		public var stat:String         				 							
+		public var stat:String;    				 							
 		
 		/**
 		 * Indicates if the scene is loaded and ready
 		 */
-		public var ready:Boolean
+		public var ready:Boolean;
 		
 		/**
 		 * Scene width in pixels.
 		 */														
-		public var width:Number
+		public var width:Number;
 		
 		/**
 		 * Scene depth in pixels
 		 */				
-		public var depth:Number
+		public var depth:Number;
 		
 		/**
 		 * Scene height in pixels
 		 */				
-		public var height:Number
+		public var height:Number;
 		
 		/**
 		 * An array of all floors for fast loop access. For "id" access use the .all array
 		 */
-		public var floors:Array                 						
+		public var floors:Array;          						
 		
 		/**
 		 * An array of all walls for fast loop access. For "id" access use the .all array
 		 */
-		public var walls:Array                  						
+		public var walls:Array;                						
 		
 		/**
 		 * An array of all objects for fast loop access. For "id" access use the .all array
 		 */
-		public var objects:Array                						
+		public var objects:Array;              						
 		
 		/**
 		 * An array of all characters for fast loop access. For "id" access use the .all array
 		 */
-		public var characters:Array                					
+		public var characters:Array;                					
 		
 		/**
 		 * An array of all empty sprites for fast loop access. For "id" access use the .all array
 		 */
-		public var emptySprites:Array                					
+		public var emptySprites:Array;                					
 		
 		/**
 		 * An array of all lights for fast loop access. For "id" access use the .all array
 		 */
-		public var lights:Array                 						
+		public var lights:Array;                						
 		
 		/**
 		 * An array of all elements for fast loop access. For "id" access use the .all array. Bullets are not here
 		 */
-		public var everything:Array                 						
+		public var everything:Array;               						
 		
 		/**
 		 * The global light for this scene. Use this property to change light properties such as intensity and color
 		 */
-		public var environmentLight:GlobalLight  					
+		public var environmentLight:GlobalLight ; 					
 		
 		/**
 		 * An array of all elements in this scene, use it with ID Strings. Bullets are not here
 		 */
-		public var all:Array                    						
+		public var all:Array;                    						
 		
 		/**
 		 * The AI-related method are grouped inside this object, for easier access
 		 */
-		public var AI:AiContainer
+		public var AI:AiContainer;
 		
 		/**
 		 * All the bullets currently active in the scene are here
 		 */
-		public var bullets:Array
+		public var bullets:Array;
 		
 		// Bullets go here instead of being deleted, so they can be reused
 		private var bulletPool:Array
 		
 		// Al events
 		/** @private */
-		public var events:Array
+		public var events:Array;
 		
 		
 		// Events
@@ -213,75 +229,75 @@ package com.ice.core.base {
 		 * An string describing the process of loading and processing and scene XML definition file.
 		 * Events dispatched by the scene while loading containg this String as a description of what is happening
 		 */
-		public static const LOADINGDESCRIPTION:String = "Creating scene"
+		public static const LOADINGDESCRIPTION:String = "Creating scene";
 		
 		/**
-		 * The fScene.LOADPROGRESS constant defines the value of the 
+		 * The Scene.LOADPROGRESS constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>scenecloadprogress</code> event.
 		 * The event is dispatched when the status of the scene changes during scene loading and processing.
 		 * A listener to this event can then check the scene's status property to update a progress dialog
 		 *
 		 */
-		public static const LOADPROGRESS:String = "scenecloadprogress"
+		public static const LOADPROGRESS:String = "scenecloadprogress";
 		
 		/**
-		 * The fScene.LOADCOMPLETE constant defines the value of the 
+		 * The Scene.LOADCOMPLETE constant defines the value of the 
 		 * <code>type</code> property of the event object for a <code>sceneloadcomplete</code> event.
 		 * The event is dispatched when the scene finishes loading and processing and is ready to be used
 		 *
 		 */
-		public static const LOADCOMPLETE:String = "sceneloadcomplete"
+		public static const LOADCOMPLETE:String = "sceneloadcomplete";
 		
 		/**
 		 * Constructor. Don't call directly, use fEngine.createScene() instead
 		 * @private
 		 */
-		function Scene(engine:Engine,container:Sprite,retriever:fEngineSceneRetriever,width:Number,height:Number,renderer:fEngineRenderEngine=null,p:fProfiler=null):void {
+		function Scene(engine:Engine, container:Sprite, retriever:ISceneRetriever, width:Number, height:Number,
+					   renderer:IRenderEngine = null, p:Profiler = null):void {
 			
 			// Properties
-			this.id = "fScene_"+(Scene.count++)
-			this.engine = engine
-			this._orig_container = container           
-			this.container = container                 
-			this.environmentLight = null     
-			this.gridSize = 64
-			this.levelSize = 64
-			this.top = 0
-			this.stat = "Loading XML"  
-			this.ready = false
-			this.viewWidth = width
-			this.viewHeight = height
+			this.id = "Scene_" + (Scene.count++);
+			this.engine = engine;
+			this._orig_container = container;           
+			this.container = container;              
+			this.environmentLight = null;     
+			this.gridSize = 64;
+			this.levelSize = 64;
+			this.top = 0;
+			this.stat = "Loading XML";  
+			this.ready = false;
+			this.viewWidth = width;
+			this.viewHeight = height;
 			
 			// Internal arrays
-			this.floors = new Array          
-			this.walls = new Array           
-			this.objects = new Array         
-			this.characters = new Array         
-			this.emptySprites = new Array         
-			this.events = new Array         
-			this.lights = new Array         
-			this.everything = new Array          
-			this.all = new Array 
-			this.bullets = new Array          
-			this.bulletPool = new Array          
+			this.floors = new Array;          
+			this.walls = new Array;           
+			this.objects = new Array;         
+			this.characters = new Array;         
+			this.emptySprites = new Array;         
+			this.events = new Array;        
+			this.lights = new Array;         
+			this.everything = new Array;          
+			this.all = new Array; 
+			this.bullets = new Array;       
+			this.bulletPool = new Array;      
 			
 			// AI
-			this.AI = new AiContainer(this)
+			this.AI = new AiContainer(this);
 			
 			// Render engine
-			this.renderEngine = renderer || (new fFlash9RenderEngine(this,container))
-			this.renderEngine.setViewportSize(width,height)
+			this.renderEngine = renderer || (new Flash9RenderEngine(this,container));
+			this.renderEngine.setViewportSize(width, height);
 			
 			// The render manager decides which elements are inside the viewport and which elements are not
-			this.renderManager = new fSceneRenderManager(this)
-			this.renderManager.setViewportSize(width,height)
+			this.renderManager = new SceneRenderManager(this);
+			this.renderManager.setViewportSize(width, height);
 			
 			// Start xml retrieve process
-			this.initializer = new fSceneInitializer(this,retriever)
+			this.initializer = new SceneInitializer(this, retriever);
 			
 			// Profiler ?
-			this.prof = p
-			
+			this.prof = p;
 		}
 		
 		/** 
@@ -289,9 +305,8 @@ package com.ice.core.base {
 		 * @private
 		 */
 		public function initialize():void {
-			this.initializer.start()
+			this.initializer.start();
 		}
-		
 		
 		// Public methods
 		
@@ -301,57 +316,40 @@ package com.ice.core.base {
 		 * @param width New width for the viewport
 		 * @param height New height for the viewport
 		 */
-		public function setViewportSize(width:int,height:int):void {
+		public function setViewportSize(width:int, height:int):void {
 			
-			this.renderManager.setViewportSize(width,height)
-			this.renderEngine.setViewportSize(width,height)
+			this.renderManager.setViewportSize(width, height);
+			this.renderEngine.setViewportSize(width, height);
 			if(this.IAmBeingRendered && this.currentCamera) {
-				this.renderManager.processNewCellCamera(this.currentCamera)
-				this.renderEngine.setCameraPosition(this.currentCamera)
+				this.renderManager.processNewCellCamera(this.currentCamera);
+				this.renderEngine.setCameraPosition(this.currentCamera);
 			}
 		}
 		
 		/**
-		 * This Method is called to enable the scene. It will enable all controllers associated to the scene and its
+		 * This Method is called to enable/disable the scene. It will enable all controllers associated to the scene and its
 		 * elements. The engine no longer calls this method when the scene is shown. Do it manually when needed.
 		 *
 		 * A typical use of manual enabling/disabling of scenes is pausing the game or showing a dialog box of any type.
 		 *
 		 * @see org.ffilmation.engine.core.fEngine#showScene
 		 */
-		public function enable():void {
+		public function set enable(value:Boolean):void {
 			
 			// Enable scene controller
-			this._enabled = true
-			if(this.controller) this.controller.enable()
+			_enabled = value;
+			if(this.controller) 
+				this.controller.enable();
 			
 			// Enable controllers for all elements in the scene
-			for(var i:int=0;i<this.everything.length;i++) if(this.everything[i].controller!=null) this.everything[i].controller.enable()
-			for(i=0;i<this.bullets.length;i++) this.bullets[i].enable()
+			var n:int = everything.length;
+			for(var i:int = 0; i < n; i++) 
+				if(this.everything[i].controller != null) 
+					this.everything[i].controller.enable = value;
+			n = bullets.length;
+			for(i=0; i< n; i++) 
+				this.bullets[i].enable = value;
 			
-		}
-		
-		/**
-		 * This Method is called to disable the scene. It will disable all controllers associated to the scene and its
-		 * elements. The engine no longer calls this method when the scene is hidden. Do it manually when needed.
-		 *
-		 * A typical use of manual enabling/disabling of scenes is pausing the game or showing a dialog box of any type.
-		 *
-		 * @see org.ffilmation.engine.core.fEngine#hideScene
-		 */
-		public function disable():void {
-			
-			// Disable scene controller
-			this._enabled = false;
-			if(this.controller) 
-				this.controller.disable();
-			
-			// Disable  controllers for all elements in the scene
-			for(var i:int = 0, n:int = everything.length; i < n; i++) 
-				if(this.everything[i].controller!=null) 
-					this.everything[i].controller.disable();
-			for(i=0, n = this.bullets.length; i < n; i++) 
-				this.bullets[i].disable();
 		}
 		
 		/**
@@ -367,7 +365,7 @@ package com.ice.core.base {
 		
 		/**
 		 * Retrieves controller from this scene
-		 * @return controller: the class that is currently controlling the fScene
+		 * @return controller: the class that is currently controlling the Scene
 		 */
 		public function get controller():ISceneController {
 			return this._controller
@@ -431,27 +429,28 @@ package com.ice.core.base {
 		 * the surface will need a bumpMap definition and bumpMapping must be enabled in the engine's global parameters
 		 *
 		 */
-		public function createOmniLight(idlight:String,x:Number,y:Number,z:Number,size:Number,color:String,intensity:Number,decay:Number,bumpMapped:Boolean=false):fOmniLight {
+		public function createOmniLight(idlight:String,x:Number,y:Number,z:Number,size:Number,color:String,intensity:Number,decay:Number,bumpMapped:Boolean=false):OmniLight {
 			
 			// Create
 			var definitionObject:XML = <light id={idlight} type="omni" size={size} x={x} y={y} z={z} color={color} intensity={intensity} decay={decay} bump={bumpMapped}/>
-			var nfLight:fOmniLight = new fOmniLight(definitionObject,this)
+			var nfLight:OmniLight = new OmniLight(definitionObject,this)
 			
 			// Events
 			nfLight.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
 			nfLight.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
 			nfLight.addEventListener(Light.RENDER,this.processNewCell,false,0,true)			   
 			nfLight.addEventListener(Light.RENDER,this.renderElement,false,0,true)			   
-			nfLight.addEventListener(Light.SIZECHANGE,this.processNewLightDimensions,false,0,true)			   
+			nfLight.addEventListener(Light.SIZECHANGE, this.processNewLightDimensions, false, 0, true);			   
 			
 			// Add to lists
-			this.lights.push(nfLight)
-			this.everything.push(nfLight)
-			this.all[nfLight.id] = nfLight
+			this.lights.push(nfLight);
+			this.everything.push(nfLight);
+			this.all[nfLight.id] = nfLight;
 			
 			//Return
-			if(this.IAmBeingRendered) nfLight.render()
-			return nfLight
+			if(this.IAmBeingRendered) 
+				nfLight.render();
+			return nfLight;
 		}
 		
 		/**
@@ -459,7 +458,7 @@ package com.ice.core.base {
 		 *
 		 * @param light The light to be removed
 		 */
-		public function removeOmniLight(light:fOmniLight):void {
+		public function removeOmniLight(light:OmniLight):void {
 			
 			// Remove from array
 			if(this.lights && this.lights.indexOf(light)>=0) {
@@ -505,7 +504,7 @@ package com.ice.core.base {
 		 * @returns The newly created character, or null if the coordinates not allowed (outside bounds)
 		 *
 		 **/
-		public function createCharacter(idchar:String,def:String,x:Number,y:Number,z:Number):fCharacter {
+		public function createCharacter(idchar:String,def:String,x:Number,y:Number,z:Number):Character {
 			
 			// Ensure coordinates are inside the scene
 			var c:fCell = this.translateToCell(x,y,z)
@@ -515,7 +514,7 @@ package com.ice.core.base {
 			
 			// Create
 			var definitionObject:XML = <character id={idchar} definition={def} x={x} y={y} z={z} />
-			var nCharacter:fCharacter = new fCharacter(definitionObject,this)
+			var nCharacter:Character = new Character(definitionObject,this)
 			nCharacter.cell = c
 			nCharacter.setDepth(c.zIndex)
 			
@@ -542,7 +541,7 @@ package com.ice.core.base {
 		 *
 		 * @param char The character to be removed
 		 */
-		public function removeCharacter(char:fCharacter):void {
+		public function removeCharacter(char:Character):void {
 			
 			// Remove from array
 			if(this.characters && this.characters.indexOf(char)>=0) {
@@ -578,11 +577,11 @@ package com.ice.core.base {
 		 * @returns The newly created empty Sprite
 		 *
 		 **/
-		public function createEmptySprite(idspr:String,x:Number,y:Number,z:Number):fEmptySprite {
+		public function createEmptySprite(idspr:String,x:Number,y:Number,z:Number):EmptySprite {
 			
 			// Create
 			var definitionObject:XML = <emptySprite id={idspr} x={x} y={y} z={z} />
-			var nEmptySprite:fEmptySprite = new fEmptySprite(definitionObject,this)
+			var nEmptySprite:EmptySprite = new EmptySprite(definitionObject,this)
 			nEmptySprite.cell = this.translateToCell(x,y,z)
 			nEmptySprite.updateDepth()
 			
@@ -608,7 +607,7 @@ package com.ice.core.base {
 		 *
 		 * @param spr The emptySprite to be removed
 		 */
-		public function removeEmptySprite(spr:fEmptySprite):void {
+		public function removeEmptySprite(spr:EmptySprite):void {
 			
 			// Remove from arraya
 			if(this.emptySprites && this.emptySprites.indexOf(spr)>=0) {
@@ -649,17 +648,17 @@ package com.ice.core.base {
 		 * renderer instance for each bullet: pass the same renderer to all bullets that look the same.
 		 *
 		 */
-		public function createBullet(x:Number,y:Number,z:Number,speedx:Number,speedy:Number,speedz:Number,renderer:fEngineBulletRenderer):fBullet {
+		public function createBullet(x:Number,y:Number,z:Number,speedx:Number,speedy:Number,speedz:Number,renderer:fEngineBulletRenderer):Bullet {
 			
 			// Is there an available bullet or a new one is needed ?
-			var b:fBullet
+			var b:Bullet
 			if(this.bulletPool.length>0) {
 				b = this.bulletPool.pop()
 				b.moveTo(x,y,z)
 				b.show()
 			}
 			else {
-				b = new fBullet(this)
+				b = new Bullet(this)
 				b.moveTo(x,y,z)
 				if(this.IAmBeingRendered) this.addElementToRenderEngine(b)
 			}
@@ -667,7 +666,7 @@ package com.ice.core.base {
 			// Events
 			b.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
 			b.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
-			b.addEventListener(fBullet.SHOT,fBulletSceneLogic.processShot,false,0,true)			   
+			b.addEventListener(Bullet.SHOT,BulletSceneLogic.processShot,false,0,true)			   
 			
 			// Properties
 			b.moveTo(x,y,z)
@@ -692,14 +691,14 @@ package com.ice.core.base {
 		/**
 		 * Removes a bullet from the scene. Bullets are automatically removed when they hit something, 
 		 * but you If you can't wait for them to be delete, you can do it manually.
-		 * @param bullet The fBullet to be removed. 
+		 * @param bullet The Bullet to be removed. 
 		 */
-		public function removeBullet(bullet:fBullet):void {
+		public function removeBullet(bullet:Bullet):void {
 			
 			// Events
 			bullet.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
 			bullet.removeEventListener(MovingElement.MOVE,this.renderElement)			   
-			bullet.removeEventListener(fBullet.SHOT,fBulletSceneLogic.processShot)
+			bullet.removeEventListener(Bullet.SHOT,BulletSceneLogic.processShot)
 			
 			// Hide
 			bullet.disable()
@@ -977,7 +976,7 @@ package com.ice.core.base {
 			
 			if(this.IAmBeingRendered) {
 				
-				var light:fOmniLight = evt.target as fOmniLight
+				var light:OmniLight = evt.target as OmniLight
 				
 				// Hide light from elements
 				var cell:fCell = light.cell
@@ -987,7 +986,7 @@ package com.ice.core.base {
 				nEl = this.characters.length
 				for(i2=0;i2<nEl;i2++) this.renderEngine.lightReset(this.characters[i2],light)
 				
-				fLightSceneLogic.processNewLightDimensions(this,evt.target as fOmniLight)
+				LightSceneLogic.processNewLightDimensions(this,evt.target as OmniLight)
 			}
 			
 		}
@@ -997,19 +996,19 @@ package com.ice.core.base {
 		public function processNewCell(evt:Event):void {
 			
 			if(this.IAmBeingRendered) {
-				if(evt.target is fOmniLight) fLightSceneLogic.processNewCellOmniLight(this,evt.target as fOmniLight)
-				if(evt.target is fCharacter) {
-					var c:fCharacter = evt.target as fCharacter
+				if(evt.target is OmniLight) LightSceneLogic.processNewCellOmniLight(this,evt.target as OmniLight)
+				if(evt.target is Character) {
+					var c:Character = evt.target as Character
 					this.renderManager.processNewCellCharacter(c)
-					fCharacterSceneLogic.processNewCellCharacter(this,c)
+					CharacterSceneLogic.processNewCellCharacter(this,c)
 				}
-				if(evt.target is fEmptySprite) {
-					var e:fEmptySprite = evt.target as fEmptySprite
+				if(evt.target is EmptySprite) {
+					var e:EmptySprite = evt.target as EmptySprite
 					this.renderManager.processNewCellEmptySprite(e)
-					fEmptySpriteSceneLogic.processNewCellEmptySprite(this,e)
+					EmptySpriteSceneLogic.processNewCellEmptySprite(this,e)
 				}
-				if(evt.target is fBullet) {
-					var b:fBullet = evt.target as fBullet
+				if(evt.target is Bullet) {
+					var b:Bullet = evt.target as Bullet
 					this.renderManager.processNewCellBullet(b)
 				}
 			}
@@ -1024,22 +1023,27 @@ package com.ice.core.base {
 			// However, the element's properties are modified. When the scene is shown the result is consistent
 			// to what has changed while the render was not being updated
 			if(this.IAmBeingRendered) {
-				if(evt.target is fOmniLight) fLightSceneLogic.renderOmniLight(this,evt.target as fOmniLight)
-				if(evt.target is fCharacter) fCharacterSceneLogic.renderCharacter(this,evt.target as fCharacter)
-				if(evt.target is fEmptySprite) fEmptySpriteSceneLogic.renderEmptySprite(this,evt.target as fEmptySprite)
-				if(evt.target is fBullet) fBulletSceneLogic.renderBullet(this,evt.target as fBullet)
+				if(evt.target is OmniLight) 
+					LightSceneLogic.renderOmniLight(this,evt.target as OmniLight);
+				if(evt.target is Character) 
+					CharacterSceneLogic.renderCharacter(this,evt.target as Character);
+				if(evt.target is EmptySprite) 
+					EmptySpriteSceneLogic.renderEmptySprite(this,evt.target as EmptySprite);
+				if(evt.target is Bullet) 
+					BulletSceneLogic.renderBullet(this,evt.target as Bullet);
 			}
-			
 		}
 		
 		// This method is called when the shadowQuality option changes
 		/** @private */
 		public function resetShadows():void {
-			this.renderEngine.resetShadows()
-			var cl:int = this.characters.length 
-			for(i=0;i<cl;i++) fCharacterSceneLogic.processNewCellCharacter(this,this.characters[i],true)
-			cl = this.lights.length
-			for(var i:int=0;i<cl;i++) fLightSceneLogic.processNewCellOmniLight(this,this.lights[i],true)
+			this.renderEngine.resetShadows();
+			var cl:int = this.characters.length;
+			for(i=0; i < cl; i++) 
+				CharacterSceneLogic.processNewCellCharacter(this, this.characters[i], true);
+			cl = this.lights.length;
+			for(var i:int = 0; i < cl; i++) 
+				LightSceneLogic.processNewCellOmniLight(this, this.lights[i], true);
 		}
 		
 		// INTERNAL METHODS RELATED TO CAMERA MANAGEMENT

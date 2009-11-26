@@ -280,7 +280,7 @@ package com.ice.core.base {
 		
 		private function delayedGotoAndStop(e:Event):void {
 			this.removeEventListener(ASSETS_CREATED, this.delayedGotoAndStop);
-			if(this.flashClip && this.pendingDestiny) 
+			if(this.flashClip && this.pendingDestiny)
 				this.flashClip.gotoAndStop(this.pendingDestiny);
 		}
 		

@@ -9,7 +9,7 @@ package com.ice.core.logic.collision.models {
 		* Collision models need to be simple geometry so the engine can solve collisions fast.
 		* @private
 		*/
-		public interface EngineCollisionModel {
+		public interface ICollisionModel {
 
 			/** 
 			* Sets new orientation for this model

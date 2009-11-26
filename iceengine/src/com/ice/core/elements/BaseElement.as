@@ -1,6 +1,17 @@
 // Object class
 package com.ice.core.elements {
-	import com.ice.core.RenderableElement;
+	import com.ice.core.base.Engine;
+	import com.ice.core.base.RenderableElement;
+	import com.ice.core.base.Scene;
+	import com.ice.core.logic.collision.models.ICollisionModel;
+	import com.ice.helpers.ObjectDefinition;
+	import com.ice.helpers.SpriteDefinition;
+	import com.ice.util.ObjectPool;
+	import com.ice.util.ds.Cell;
+	
+	import flash.display.MovieClip;
+	import flash.events.Event;
+	import flash.geom.Rectangle;
 	
 	// Imports
 	
@@ -25,29 +36,29 @@ package com.ice.core.elements {
 		/**
 		 * Limits size of object shadow projection relative to X times the object's height (amount of stretching movieClips will suffer)
 		 */
-		public static const MAXSHADOW = 2
+		public static const MAXSHADOW = 2;
 		
 		/**
 		 * Shadows are harder or softer depending on the distance from the shadow origin to the plane where the shadow is drawn
 		 * This constant defines the max distance in pixels at which a shadow will be seen. The shadow's alpha values will fade
 		 * from 1 to 0 along this distance
 		 */
-		public static const SHADOWRANGE = 100
+		public static const SHADOWRANGE = 100;
 		
 		/**
 		 * Shadows become bigger as they fade away. This is the scaling factor -1. 1 means the shadow doubles in size
 		 */
-		public static const SHADOWSCALE = 0.7
+		public static const SHADOWSCALE = 0.7;
 		
 		// Private properties
 		/** @private */
-		public var definition:fObjectDefinition
+		public var definition:ObjectDefinition;
 		/** @private */
-		public var sprites:Array
+		public var sprites:Array;
 		/** @private */
-		public var _orientation:Number
+		public var _orientation:Number;
 		/** @private */
-		public var shadowRange:Number
+		public var shadowRange:Number;
 		
 		// Public properties
 		
@@ -59,13 +70,13 @@ package com.ice.core.elements {
 		 * Collision models need to be simple geometry so the engine can solve collisions fast.
 		 * @private
 		 */
-		public var collisionModel:fEngineCollisionModel
+		public var collisionModel:ICollisionModel;
 		
 		/**
 		 * The definition ID for this fObject. It is useful for example when processing collision events, as it will allow
 		 * you to know what kind of thing did you collide against.
 		 */
-		public var definitionID:String
+		public var definitionID:String;
 		
 		/**
 		 * This property provides a bit of rendering optimization.
@@ -74,7 +85,7 @@ package com.ice.core.elements {
 		 * Don't confuse "animated" ( a looping movieClip ) with "moveable".
 		 * fObjects default to non-animated and fCharacters default to animated. You can use the <b>animated</b> attribute in your XMLs to change this
 		 */
-		public var animated:Boolean = false
+		public var animated:Boolean = false;
 		
 		// Events
 		
@@ -85,7 +96,7 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType objectNewOrientation
 		 */
-		public static const NEWORIENTATION:String = "objectNewOrientation"
+		public static const NEWORIENTATION:String = "objectNewOrientation";
 		
 		/**
 		 * The fObject.GOTOANDPLAY constant defines the value of the 
@@ -94,7 +105,7 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType objectGotoAndPlay
 		 */
-		public static const GOTOANDPLAY:String = "objectGotoAndPlay"
+		public static const GOTOANDPLAY:String = "objectGotoAndPlay";
 		
 		
 		/**
@@ -104,90 +115,94 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType objectGotoAndStop
 		 */
-		public static const GOTOANDSTOP:String = "objectGotoAndStop"
+		public static const GOTOANDSTOP:String = "objectGotoAndStop";
 		
 		
 		// Constructor
 		/** @private */
-		function BaseElement(defObj:XML,scene:fScene):void {
+		function BaseElement(defObj:XML, scene:Scene):void {
 			
 			// Previous
-			super(defObj,scene)
+			super(defObj, scene);
 			
 			// Make sure this object has a definition in the scene. If it doesn't, throw an error
-			this.definitionID = defObj.@definition
-			this.definition = this.scene.resourceManager.getObjectDefinition(this.definitionID)
+			this.definitionID = defObj.@definition;
+			this.definition = this.scene.resourceManager.getObjectDefinition(this.definitionID);
 			if(!this.definition) {
-				throw new Error("The scene does not contain a valid object definition that matches definition id '"+this.definitionID+"'")
+				throw new Error("The scene does not contain a valid object definition that matches definition id '" + this.definitionID+"'");
 			}
 			
 			// Retrieve all sprites for this object
 			try {
-				this.sprites = this.definition.sprites
+				this.sprites = this.definition.sprites;
 			} catch(e:Error) {
-				throw new Error("Object definition '"+this.definitionID+"' contains an invalid display model or it can't be applied to object '"+this.id+"' "+e)
+				throw new Error("Object definition '"+this.definitionID+"' contains an invalid display model or it can't be applied to object '"+this.id+"' "+e);
 			}
 			
 			// Initialize rotation for this object
-			this._orientation = 0
+			this._orientation = 0;
 			
 			// Is it animated ?
-			if(defObj.@animated.length()==1) this.animated = (defObj.@animated.toString()=="true")
+			if(defObj.@animated.length()==1) 
+				this.animated = (defObj.@animated.toString() == "true");
 			
 			// Definition Lights enabled ?
-			if(defObj.@receiveLights.length()!=1) this.receiveLights = this.definition.receiveLights
+			if(defObj.@receiveLights.length() != 1) 
+				this.receiveLights = this.definition.receiveLights;
 			
 			// Definition Shadows enabled ?
-			if(defObj.@receiveShadows.length()!=1) this.receiveShadows = this.definition.receiveShadows
+			if(defObj.@receiveShadows.length() != 1) 
+				this.receiveShadows = this.definition.receiveShadows;
 			
 			// Definition Projects shadow ?
-			if(defObj.@castShadows.length()!=1) this.castShadows = this.definition.castShadows
+			if(defObj.@castShadows.length() != 1) 
+				this.castShadows = this.definition.castShadows;
 			
 			// Definition Solid ?
-			if(defObj.@solid.length()!=1) this.solid = this.definition.solid
+			if(defObj.@solid.length() != 1) 
+				this.solid = this.definition.solid;
 			
 			// Retrieve collision model
 			try {
-				this.collisionModel = this.definition.collisionModel
+				this.collisionModel = this.definition.collisionModel;
 			} catch(e:Error) {
-				throw new Error("Object definition '"+this.definitionID+"' contains an invalid collision model or it can't be applied to object '"+this.id+"'")
+				throw new Error("Object definition '"+this.definitionID+"' contains an invalid collision model or it can't be applied to object '"+this.id+"'");
 			}
 			
 			// Define shadowRange
-			this.shadowRange = this.height*BaseElement.MAXSHADOW*fEngine.DEFORMATION
+			this.shadowRange = this.height * MAXSHADOW * Engine.DEFORMATION;
 			
 			// Define bounds. I need to load the symbol from the library to know its size. I will be destroyed immediately
-			this.top = this.z+this.height
-			this.x0 = this.x-this.radius
-			this.x1 = this.x+this.radius
-			this.y0 = this.y-this.radius
-			this.y1 = this.y+this.radius
+			this.top = this.z + this.height;
+			this.x0 = this.x - this.radius;
+			this.x1 = this.x + this.radius;
+			this.y0 = this.y - this.radius;
+			this.y1 = this.y + this.radius;
 			
-			var clase:Class = this.sprites[0].sprite as Class
-			var tempSprite:MovieClip = objectPool.getInstanceOf(clase) as MovieClip
-			var w:Number = tempSprite.width
-			var h:Number = tempSprite.height
-			this.bounds2d = new Rectangle(-(w >> 1),-h,w,h)
-			objectPool.returnInstance(tempSprite)
+			var clase:Class = this.sprites[0].sprite as Class;
+			var tempSprite:MovieClip = objectPool.getInstanceOf(clase) as MovieClip;
+			var w:Number = tempSprite.width;
+			var h:Number = tempSprite.height;
+			this.bounds2d = new Rectangle(-(w >> 1), -h, w, h);
+			ObjectPool.returnInstance(tempSprite);
 			
 			// Screen area
-			this.screenArea = this.bounds2d.clone()
-			this.screenArea.offsetPoint(fScene.translateCoords(this.x,this.y,this.z))
+			this.screenArea = this.bounds2d.clone();
+			this.screenArea.offsetPoint(Scene.translateCoords(this.x, this.y, this.z));
 			
 			// Initial orientation
-			if(defObj.@orientation.length()>0) this.orientation = new Number(defObj.@orientation[0])
-			else this.orientation = 0
-			
+			if(defObj.@orientation.length() > 0)
+				this.orientation = new Number(defObj.@orientation[0]);
+			else 
+				this.orientation = 0;
 		}
 		
 		/** @private */
-		public override function distanceTo(x:Number,y:Number,z:Number):Number {
+		public override function distanceTo(x:Number, y:Number, z:Number):Number {
+			var n1:Number = mathUtils.distance3d(x, y, z, this.x, this.y, this.z);
+			var n2:Number = mathUtils.distance3d(x, y, z, this.x, this.y, this.top);
 			
-			var n1:Number = mathUtils.distance3d(x,y,z,this.x,this.y,this.z)
-			var n2:Number = mathUtils.distance3d(x,y,z,this.x,this.y,this.top)
-			
-			return (n1<n2) ? n1 : n2
-			
+			return (n1 < n2) ? n1 : n2;
 		}
 		
 		/**
@@ -213,18 +228,20 @@ package com.ice.core.elements {
 		 */
 		public function set orientation(angle:Number):void {
 			
-			var correctedAngle:Number = angle%360
-			if(correctedAngle<0) correctedAngle+=360
-			this._orientation = correctedAngle
-			correctedAngle/=360
-			if(isNaN(correctedAngle)) return
+			var correctedAngle:Number = angle % 360;
+			if(correctedAngle < 0) 
+				correctedAngle += 360; 
+			this._orientation = correctedAngle;
+			correctedAngle /= 360;
+			if(isNaN(correctedAngle))
+				return
 			
 			// Update collision model
-			var newSprite:int = int(correctedAngle*this.sprites.length)
-			this.collisionModel.orientation = (this.sprites[newSprite] as fSpriteDefinition).angle
+			var newSprite:int = int(correctedAngle * this.sprites.length);
+			this.collisionModel.orientation = (this.sprites[newSprite] as SpriteDefinition).angle;
 			
 			// Dispatch event so the render engine updates the screen
-			this.dispatchEvent(new Event(BaseElement.NEWORIENTATION))
+			this.dispatchEvent(new Event(NEWORIENTATION));
 			
 		}
 		
@@ -263,7 +280,7 @@ package com.ice.core.elements {
 			if(this.flashClip) this.flashClip.gotoAndPlay(where)
 			
 			// Dispatch event so the render engine updates the screen
-			this.dispatchEvent(new Event(BaseElement.GOTOANDPLAY))
+			this.dispatchEvent(new Event(GOTOANDPLAY))
 			
 		}
 		
@@ -273,12 +290,11 @@ package com.ice.core.elements {
 		 * @param where A frame number or frame label
 		 */
 		public override function gotoAndStop(where:*):void {
-			
-			if(this.flashClip) this.flashClip.gotoAndStop(where)
+			if(this.flashClip)
+				this.flashClip.gotoAndStop(where);
 			
 			// Dispatch event so the render engine updates the screen
-			this.dispatchEvent(new Event(BaseElement.GOTOANDSTOP))
-			
+			this.dispatchEvent(new Event(GOTOANDSTOP));
 		}
 		
 		/**
@@ -288,10 +304,9 @@ package com.ice.core.elements {
 		 *
 		 * @param param An optional extra parameter to pass to the function
 		 */
-		public override function call(what:String,param:*=null):void {
-			
-			if(this.flashClip) this.flashClip[what](param)
-			
+		public override function call(what:String, param:*=null):void {
+			if(this.flashClip) 
+				this.flashClip[what](param);
 		}
 		
 		
@@ -299,7 +314,7 @@ package com.ice.core.elements {
 		 * Objects can't be moved
 		 * @private
 		 */
-		public override function moveTo(x:Number,y:Number,z:Number):void {
+		public override function moveTo(x:Number, y:Number, z:Number):void {
 			throw new Error("Filmation Engine Exception: You can't move a fObject. If you want to move "+this.id+" make it an fCharacter"); 
 		}
 		
@@ -309,30 +324,25 @@ package com.ice.core.elements {
 		 */
 		public function updateDepth():void {
 			
-			var c:fCell = (this.cell==null)?(this.scene.translateToCell(this.x,this.y,this.z)):(this.cell)
-			var nz:Number = c.zIndex
-			this.setDepth(nz)
+			var c:Cell = (this.cell == null) ? (this.scene.translateToCell(this.x, this.y, this.z)) : (this.cell);
+			var nz:Number = c.zIndex;
+			this.setDepth(nz);
 			
 		}
 		
 		/** @private */
 		public function disposeObject():void {
 			
-			this.definition = null
-			this.sprites = null
-			this.collisionModel = null
-			this.disposeRenderable()
+			this.definition = null;
+			this.sprites = null;
+			this.collisionModel = null;
+			this.disposeRenderable();
 			
 		}
 		
 		/** @private */
 		public override function dispose():void {
-			this.disposeObject()
+			this.disposeObject();
 		}		
-		
-		
-		
 	}
-	
-	
 }

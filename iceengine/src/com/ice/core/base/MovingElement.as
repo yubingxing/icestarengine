@@ -9,6 +9,8 @@ package com.ice.core.base {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
+	import org.ffilmation.utils.MathUtils;
+	
 	// Imports
 	
 	/**
@@ -141,7 +143,7 @@ package com.ice.core.base {
 			this.xmlObj = defObj;
 			var temp:XMLList= defObj.@id;
 			
-			this.uniqueId = MovingElement.count++;
+			this.uniqueId = count++;
 			if(temp.length()==1) 
 				this.id = temp.toString();
 			else 
@@ -162,7 +164,6 @@ package com.ice.core.base {
 			if(isNaN(this.z)) this.z = 0;
 			
 			this.customData = new Object();
-			
 		}
 		
 		/**
@@ -212,10 +213,10 @@ package com.ice.core.base {
 			var cell:Cell = this.scene.translateToCell(x, y, z);
 			if(this.cell == null || cell == null || cell != this.cell) {
 				this.cell = cell;
-				dispatchEvent(new Event(MovingElement.NEWCELL));
+				dispatchEvent(new Event(NEWCELL));
 			}
 			// Dispatch event
-			this.dispatchEvent(new MoveEvent(MovingElement.MOVE, this.x - dx, this.y - dy, this.z - dz));
+			this.dispatchEvent(new MoveEvent(MOVE, this.x - dx, this.y - dy, this.z - dz));
 		}
 		
 		
@@ -232,7 +233,7 @@ package com.ice.core.base {
 			_offY = target.y - this.y;	
 			_offZ = target.z - this.z;
 			_elasticity = 1 + _elasticity;
-			target.addEventListener(MovingElement.MOVE, moveListener, false, 0, true);
+			target.addEventListener(MOVE, moveListener, false, 0, true);
 		}
 		
 		/**
@@ -242,18 +243,18 @@ package com.ice.core.base {
 		 *
 		 */
 		public function stopFollowing(target:MovingElement):void {
-			target.removeEventListener(MovingElement.MOVE, moveListener);
+			target.removeEventListener(MOVE, moveListener);
 		}
 		
 		// Listens for another element's movements
 		/** @private */
-		public function moveListener(evt:MoveEvent):void {
+		public function moveListener(event:MoveEvent):void {
 			if(_elasticity == 1) 
-				this.moveTo(evt.target.x - _offX, evt.target.y - _offY, evt.target.z - _offZ);
+				this.moveTo(event.target.x - _offX, event.target.y - _offY, event.target.z - _offZ);
 			else {
-				_destX = evt.target.x - _offX;
-				_destY = evt.target.y - _offY;
-				_destZ = evt.target.z - _offZ;
+				_destX = event.target.x - _offX;
+				_destY = event.target.y - _offY;
+				_destZ = event.target.z - _offZ;
 				Engine.stage.addEventListener('enterFrame', followListener, false, 0, true);
 			}
 		}
@@ -261,7 +262,7 @@ package com.ice.core.base {
 		/** Tries to catch up with the followed element
 		 * @private
 		 */
-		public function followListener(evt:Event) {
+		public function followListener(event:Event) {
 			var dx:Number = _destX - this.x;
 			var dy:Number = _destY - this.y;		
 			var dz:Number = _destZ - this.z;
@@ -272,7 +273,7 @@ package com.ice.core.base {
 			
 			// Stop ?
 			if(dx < 1 && dx > -1 && dy < 1 && dy > -1 && dz < 1 && dz > -1) {
-				Engine.stage.removeEventListener('enterFrame', followListener);
+				Engine.stage.removeEventListener('enterFrame', this.followListener);
 			}
 		} 
 		
@@ -282,7 +283,7 @@ package com.ice.core.base {
 		 * @return distance
 		 */
 		public function distanceTo(x:Number, y:Number, z:Number):Number {
-			return mathUtils.distance3d(x, y, z, this.x, this.y, this.z);
+			return MathUtils.distance3d(x, y, z, this.x, this.y, this.z);
 		}
 		
 		// Clean resources

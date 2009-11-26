@@ -6,7 +6,7 @@ package com.ice.core.logic.collision.models {
 		* This is a cilinder-shaped collision model. It is automatically assigned when the object's XML definition uses the BOX Tag
 		* @private
 		*/
-		public class BoxCollisionModel extends fBox implements EngineCollisionModel {
+		public class BoxCollisionModel extends fBox implements ICollisionModel {
 			
 			// Private vars
 			private var definitionXML:XML

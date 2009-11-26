@@ -1,4 +1,5 @@
 package com.ice.core.interfaces {
+	import com.ice.core.elements.BaseElement;
 
 		// Imports
 
@@ -11,9 +12,9 @@ package com.ice.core.interfaces {
 			/** 
 			* This is the initialization method
 			*
-			* @param character The fElement that will be controlled by this class.
+			* @param character The Element that will be controlled by this class.
 			*/
-		  function assignElement(element:fElement):void;
+		  function assignElement(element:BaseElement):void;
 
 			/** 
 			* This is used to enable the controller. In complex applications, you will want to enable / disable controllers as you enter / leave scenes,
