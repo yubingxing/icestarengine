@@ -6,21 +6,30 @@ package com.ice.core.base {
 	import com.ice.core.elements.Character;
 	import com.ice.core.elements.EmptySprite;
 	import com.ice.core.elements.OmniLight;
+	import com.ice.core.events.MoveEvent;
+	import com.ice.core.interfaces.IBulletRenderer;
 	import com.ice.core.interfaces.IRenderEngine;
 	import com.ice.core.interfaces.ISceneController;
 	import com.ice.core.interfaces.ISceneRetriever;
+	import com.ice.core.logic.visibility.VisibilitySolver;
 	import com.ice.core.renderEngines.flash9RenderEngine.Flash9RenderEngine;
 	import com.ice.core.scene.initialize.SceneInitializer;
 	import com.ice.core.scene.initialize.SceneResourceManager;
+	import com.ice.core.scene.logic.BulletSceneLogic;
 	import com.ice.core.scene.logic.CharacterSceneLogic;
+	import com.ice.core.scene.logic.EmptySpriteSceneLogic;
 	import com.ice.core.scene.logic.LightSceneLogic;
 	import com.ice.core.scene.logic.SceneRenderManager;
+	import com.ice.helpers.SortArea;
 	import com.ice.profiler.Profiler;
+	import com.ice.util.ds.Cell;
 	import com.ice.util.rtree.RTree;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	
 	
@@ -334,21 +343,21 @@ package com.ice.core.base {
 		 *
 		 * @see org.ffilmation.engine.core.fEngine#showScene
 		 */
-		public function set enable(value:Boolean):void {
+		public function set enabled(value:Boolean):void {
 			
 			// Enable scene controller
-			_enabled = value;
+			this._enabled = value;
 			if(this.controller) 
-				this.controller.enable();
+				this.controller.enabled = value;
 			
 			// Enable controllers for all elements in the scene
 			var n:int = everything.length;
 			for(var i:int = 0; i < n; i++) 
 				if(this.everything[i].controller != null) 
-					this.everything[i].controller.enable = value;
+					this.everything[i].controller.enabled = value;
 			n = bullets.length;
 			for(i=0; i< n; i++) 
-				this.bullets[i].enable = value;
+				this.bullets[i].enabled = value;
 			
 		}
 		
@@ -358,7 +367,7 @@ package com.ice.core.base {
 		 */
 		public function set controller(controller:ISceneController):void {
 			if(this._controller!=null) 
-				this._controller.disable();
+				this._controller.enabled = false;
 			this._controller = controller;
 			this._controller.assignScene(this);
 		}
@@ -368,7 +377,7 @@ package com.ice.core.base {
 		 * @return controller: the class that is currently controlling the Scene
 		 */
 		public function get controller():ISceneController {
-			return this._controller
+			return this._controller;
 		}
 		
 		/** 
@@ -381,16 +390,17 @@ package com.ice.core.base {
 			
 			// Stop following old camera
 			if(this.currentCamera) {
-				this.currentCamera.removeEventListener(MovingElement.MOVE,this.cameraMoveListener)
-				this.currentCamera.removeEventListener(MovingElement.NEWCELL,this.cameraNewCellListener)
+				this.currentCamera.removeEventListener(MovingElement.MOVE, this.cameraMoveListener);
+				this.currentCamera.removeEventListener(MovingElement.NEWCELL, this.cameraNewCellListener);
 			}
 			
 			// Follow new camera
-			this.currentCamera = camera
-			this.currentCamera.addEventListener(MovingElement.MOVE,this.cameraMoveListener,false,0,true)
-			this.currentCamera.addEventListener(MovingElement.NEWCELL,this.cameraNewCellListener,false,0,true)
-			if(this.IAmBeingRendered) this.renderManager.processNewCellCamera(camera)
-			this.followCamera(this.currentCamera)
+			this.currentCamera = camera;
+			this.currentCamera.addEventListener(MovingElement.MOVE, this.cameraMoveListener, false, 0, true);
+			this.currentCamera.addEventListener(MovingElement.NEWCELL, this.cameraNewCellListener, false, 0, true);
+			if(this.IAmBeingRendered) 
+				this.renderManager.processNewCellCamera(camera);
+			this.followCamera(this.currentCamera);
 		}
 		
 		/**
@@ -402,7 +412,7 @@ package com.ice.core.base {
 		public function createCamera():Camera {
 			
 			//Return
-			return new Camera(this)
+			return new Camera(this);
 		}
 		
 		/**
@@ -429,17 +439,17 @@ package com.ice.core.base {
 		 * the surface will need a bumpMap definition and bumpMapping must be enabled in the engine's global parameters
 		 *
 		 */
-		public function createOmniLight(idlight:String,x:Number,y:Number,z:Number,size:Number,color:String,intensity:Number,decay:Number,bumpMapped:Boolean=false):OmniLight {
+		public function createOmniLight(idlight:String, x:Number, y:Number, z:Number, size:Number, color:String, intensity:Number, decay:Number, bumpMapped:Boolean = false):OmniLight {
 			
 			// Create
-			var definitionObject:XML = <light id={idlight} type="omni" size={size} x={x} y={y} z={z} color={color} intensity={intensity} decay={decay} bump={bumpMapped}/>
-			var nfLight:OmniLight = new OmniLight(definitionObject,this)
+			var definitionObject:XML = <light id={idlight} type="omni" size={size} x={x} y={y} z={z} color={color} intensity={intensity} decay={decay} bump={bumpMapped}/>;
+			var nfLight:OmniLight = new OmniLight(definitionObject, this);
 			
 			// Events
-			nfLight.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
-			nfLight.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
-			nfLight.addEventListener(Light.RENDER,this.processNewCell,false,0,true)			   
-			nfLight.addEventListener(Light.RENDER,this.renderElement,false,0,true)			   
+			nfLight.addEventListener(MovingElement.NEWCELL, this.processNewCell, false, 0, true);		   
+			nfLight.addEventListener(MovingElement.MOVE, this.renderElement, false, 0, true);			   
+			nfLight.addEventListener(Light.RENDER, this.processNewCell, false, 0, true);			   
+			nfLight.addEventListener(Light.RENDER, this.renderElement, false, 0, true);			   
 			nfLight.addEventListener(Light.SIZECHANGE, this.processNewLightDimensions, false, 0, true);			   
 			
 			// Add to lists
@@ -462,29 +472,31 @@ package com.ice.core.base {
 			
 			// Remove from array
 			if(this.lights && this.lights.indexOf(light)>=0) {
-				this.lights.splice(this.lights.indexOf(light),1)
-				this.everything.splice(this.everything.indexOf(light),1)
+				this.lights.splice(this.lights.indexOf(light), 1);
+				this.everything.splice(this.everything.indexOf(light), 1);
 			}
 			
 			// Hide light from elements
-			var cell:fCell = light.cell
-			var nEl:Number = light.nElements
-			for(var i2:Number=0;i2<nEl;i2++) this.renderEngine.lightOut(light.elementsV[i2].obj,light)
-			light.scene = null
+			var cell:Cell = light.cell;
+			var nEl:Number = light.nElements;
+			for(var i2:Number = 0; i2 < nEl; i2++) 
+				this.renderEngine.lightOut(light.elementsV[i2].obj, light);
+			light.scene = null;
 			
-			nEl = this.characters.length
-			for(i2=0;i2<nEl;i2++) this.renderEngine.lightOut(this.characters[i2],light)
-			this.all[light.id] = null
+			nEl = this.characters.length;
+			for(i2=0; i2 < nEl; i2++)
+				this.renderEngine.lightOut(this.characters[i2], light);
+			this.all[light.id] = null;
 			
 			// Events
-			light.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
-			light.removeEventListener(MovingElement.MOVE,this.renderElement)			   
-			light.removeEventListener(Light.RENDER,this.processNewCell)			   
-			light.removeEventListener(Light.RENDER,this.renderElement)			   
-			light.removeEventListener(Light.SIZECHANGE,this.processNewLightDimensions)			   
+			light.removeEventListener(MovingElement.NEWCELL, this.processNewCell);			   
+			light.removeEventListener(MovingElement.MOVE, this.renderElement);			   
+			light.removeEventListener(Light.RENDER, this.processNewCell);			   
+			light.removeEventListener(Light.RENDER, this.renderElement);			   
+			light.removeEventListener(Light.SIZECHANGE, this.processNewLightDimensions);			   
 			
 			// This light may be in some character cache
-			light.removed = true
+			light.removed = true;
 			
 		}
 		
@@ -504,36 +516,36 @@ package com.ice.core.base {
 		 * @returns The newly created character, or null if the coordinates not allowed (outside bounds)
 		 *
 		 **/
-		public function createCharacter(idchar:String,def:String,x:Number,y:Number,z:Number):Character {
+		public function createCharacter(idchar:String, def:String, x:Number, y:Number, z:Number):Character {
 			
 			// Ensure coordinates are inside the scene
-			var c:fCell = this.translateToCell(x,y,z)
+			var c:Cell = this.translateToCell(x, y, z);
 			if(c==null) {
-				return null
+				return null;
 			}
 			
 			// Create
-			var definitionObject:XML = <character id={idchar} definition={def} x={x} y={y} z={z} />
-			var nCharacter:Character = new Character(definitionObject,this)
-			nCharacter.cell = c
-			nCharacter.setDepth(c.zIndex)
+			var definitionObject:XML = <character id={idchar} definition={def} x={x} y={y} z={z} />;
+			var nCharacter:Character = new Character(definitionObject, this);
+			nCharacter.cell = c;
+			nCharacter.setDepth(c.zIndex);
 			
 			// Events
-			nCharacter.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
-			nCharacter.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
+			nCharacter.addEventListener(MovingElement.NEWCELL, this.processNewCell, false, 0, true);			   
+			nCharacter.addEventListener(MovingElement.MOVE, this.renderElement, false, 0, true);			   
 			
 			// Add to lists
-			this.characters.push(nCharacter)
-			this.everything.push(nCharacter)
-			this.all[nCharacter.id] = nCharacter
+			this.characters.push(nCharacter);
+			this.everything.push(nCharacter);
+			this.all[nCharacter.id] = nCharacter;
 			if(this.IAmBeingRendered) {
-				this.addElementToRenderEngine(nCharacter)
-				this.renderManager.processNewCellCharacter(nCharacter)
-				this.render()
+				this.addElementToRenderEngine(nCharacter);
+				this.renderManager.processNewCellCharacter(nCharacter);
+				this.render();
 			}
 			
 			//Return
-			return nCharacter
+			return nCharacter;
 		}
 		
 		/**
@@ -544,22 +556,22 @@ package com.ice.core.base {
 		public function removeCharacter(char:Character):void {
 			
 			// Remove from array
-			if(this.characters && this.characters.indexOf(char)>=0) {
-				this.characters.splice(this.characters.indexOf(char),1)
-				this.everything.splice(this.everything.indexOf(char),1)
-				this.all[char.id] = null
+			if(this.characters && this.characters.indexOf(char) >= 0) {
+				this.characters.splice(this.characters.indexOf(char), 1);
+				this.everything.splice(this.everything.indexOf(char), 1);
+				this.all[char.id] = null;
 			}
 			
 			// Hide
-			char.hide()
+			char.hide();
 			
 			// Events
-			char.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
-			char.removeEventListener(MovingElement.MOVE,this.renderElement)			   
+			char.removeEventListener(MovingElement.NEWCELL, this.processNewCell);	   
+			char.removeEventListener(MovingElement.MOVE, this.renderElement);   
 			
 			// Remove from render engine
-			this.removeElementFromRenderEngine(char)
-			char.dispose()
+			this.removeElementFromRenderEngine(char);
+			char.dispose();
 			
 		}
 		
@@ -580,26 +592,26 @@ package com.ice.core.base {
 		public function createEmptySprite(idspr:String,x:Number,y:Number,z:Number):EmptySprite {
 			
 			// Create
-			var definitionObject:XML = <emptySprite id={idspr} x={x} y={y} z={z} />
-			var nEmptySprite:EmptySprite = new EmptySprite(definitionObject,this)
-			nEmptySprite.cell = this.translateToCell(x,y,z)
-			nEmptySprite.updateDepth()
+			var definitionObject:XML = <emptySprite id={idspr} x={x} y={y} z={z} />;
+			var nEmptySprite:EmptySprite = new EmptySprite(definitionObject, this);
+			nEmptySprite.cell = this.translateToCell(x, y, z);
+			nEmptySprite.updateDepth();
 			
 			// Events
-			nEmptySprite.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
-			nEmptySprite.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
+			nEmptySprite.addEventListener(MovingElement.NEWCELL, this.processNewCell, false, 0, true);	   
+			nEmptySprite.addEventListener(MovingElement.MOVE, this.renderElement, false, 0, true);	   
 			
 			// Add to lists
-			this.emptySprites.push(nEmptySprite)
-			this.everything.push(nEmptySprite)
-			this.all[nEmptySprite.id] = nEmptySprite
+			this.emptySprites.push(nEmptySprite);
+			this.everything.push(nEmptySprite);
+			this.all[nEmptySprite.id] = nEmptySprite;
 			if(this.IAmBeingRendered) {
-				this.addElementToRenderEngine(nEmptySprite)
-				this.renderManager.processNewCellEmptySprite(nEmptySprite)
+				this.addElementToRenderEngine(nEmptySprite);
+				this.renderManager.processNewCellEmptySprite(nEmptySprite);
 			}
 			
 			//Return
-			return nEmptySprite
+			return nEmptySprite;
 		}
 		
 		/**
@@ -607,25 +619,25 @@ package com.ice.core.base {
 		 *
 		 * @param spr The emptySprite to be removed
 		 */
-		public function removeEmptySprite(spr:EmptySprite):void {
+		public function removeEmptySprite(sprite:EmptySprite):void {
 			
 			// Remove from arraya
-			if(this.emptySprites && this.emptySprites.indexOf(spr)>=0) {
-				this.emptySprites.splice(this.emptySprites.indexOf(spr),1)
-				this.everything.splice(this.everything.indexOf(spr),1)
-				this.all[spr.id] = null
+			if(this.emptySprites && this.emptySprites.indexOf(sprite) >= 0) {
+				this.emptySprites.splice(this.emptySprites.indexOf(sprite), 1);
+				this.everything.splice(this.everything.indexOf(sprite), 1);
+				this.all[sprite.id] = null;
 			}
 			
 			// Hide
-			spr.hide()
+			sprite.hide();
 			
 			// Events
-			spr.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
-			spr.removeEventListener(MovingElement.MOVE,this.renderElement)			   
+			sprite.removeEventListener(MovingElement.NEWCELL, this.processNewCell);		   
+			sprite.removeEventListener(MovingElement.MOVE, this.renderElement);		   
 			
 			// Remove from render engine
-			this.removeElementFromRenderEngine(spr)
-			spr.dispose()
+			this.removeElementFromRenderEngine(sprite);
+			sprite.dispose();
 			
 		}
 		
@@ -648,44 +660,46 @@ package com.ice.core.base {
 		 * renderer instance for each bullet: pass the same renderer to all bullets that look the same.
 		 *
 		 */
-		public function createBullet(x:Number,y:Number,z:Number,speedx:Number,speedy:Number,speedz:Number,renderer:fEngineBulletRenderer):Bullet {
+		public function createBullet(x:Number, y:Number, z:Number, speedx:Number, speedy:Number, speedz:Number, renderer:IBulletRenderer):Bullet {
 			
 			// Is there an available bullet or a new one is needed ?
-			var b:Bullet
-			if(this.bulletPool.length>0) {
-				b = this.bulletPool.pop()
-				b.moveTo(x,y,z)
-				b.show()
+			var bullet:Bullet;
+			if(this.bulletPool.length > 0) {
+				bullet = this.bulletPool.pop();
+				bullet.moveTo(x, y, z);
+				bullet.show();
 			}
 			else {
-				b = new Bullet(this)
-				b.moveTo(x,y,z)
-				if(this.IAmBeingRendered) this.addElementToRenderEngine(b)
+				bullet = new Bullet(this);
+				bullet.moveTo(x, y, z);
+				if(this.IAmBeingRendered)
+					this.addElementToRenderEngine(bullet);
 			}
 			
 			// Events
-			b.addEventListener(MovingElement.NEWCELL,this.processNewCell,false,0,true)			   
-			b.addEventListener(MovingElement.MOVE,this.renderElement,false,0,true)			   
-			b.addEventListener(Bullet.SHOT,BulletSceneLogic.processShot,false,0,true)			   
+			bullet.addEventListener(MovingElement.NEWCELL, this.processNewCell, false, 0, true);			   
+			bullet.addEventListener(MovingElement.MOVE, this.renderElement, false, 0, true);   
+			bullet.addEventListener(Bullet.SHOT, BulletSceneLogic.processShot, false, 0, true);	   
 			
 			// Properties
-			b.moveTo(x,y,z)
-			b.speedx = speedx
-			b.speedy = speedy
-			b.speedz = speedz
+			bullet.moveTo(x, y, z);
+			bullet.speedx = speedx;
+			bullet.speedy = speedy;
+			bullet.speedz = speedz;
 			
 			// Init renderer
-			b.customData.bulletRenderer = renderer
-			if(b.container) b.customData.bulletRenderer.init(b)
+			bullet.customData.bulletRenderer = renderer;
+			if(bullet.container) 
+				bullet.customData.bulletRenderer.init(bullet);
 			
 			// Add to lists
-			this.bullets.push(b)
+			this.bullets.push(bullet);
 			
 			// Enable
-			if(this._enabled) b.enable()
+			bullet.enabled = _enabled;
 			
 			// Return
-			return b
+			return bullet;
 		}
 		
 		/**
@@ -696,18 +710,18 @@ package com.ice.core.base {
 		public function removeBullet(bullet:Bullet):void {
 			
 			// Events
-			bullet.removeEventListener(MovingElement.NEWCELL,this.processNewCell)			   
-			bullet.removeEventListener(MovingElement.MOVE,this.renderElement)			   
-			bullet.removeEventListener(Bullet.SHOT,BulletSceneLogic.processShot)
+			bullet.removeEventListener(MovingElement.NEWCELL, this.processNewCell);			   
+			bullet.removeEventListener(MovingElement.MOVE, this.renderElement);	   
+			bullet.removeEventListener(Bullet.SHOT, BulletSceneLogic.processShot);
 			
 			// Hide
-			bullet.disable()
-			bullet.customData.bulletRenderer.clear(bullet)
-			bullet.hide()
+			bullet.enabled = false;
+			bullet.customData.bulletRenderer.clear(bullet);
+			bullet.hide();
 			
 			// Back to pool
-			this.bullets.splice(this.bullets.indexOf(bullet),1)
-			this.bulletPool.push(bullet)
+			this.bullets.splice(this.bullets.indexOf(bullet), 1);
+			this.bulletPool.push(bullet);
 			
 		}
 		
@@ -720,8 +734,8 @@ package com.ice.core.base {
 		 *
 		 * @return A Point in this scene's container Sprite
 		 */
-		public function translate3DCoordsTo2DCoords(x:Number,y:Number,z:Number):Point {
-			return Scene.translateCoords(x,y,z)
+		public function translate3DCoordsTo2DCoords(x:Number, y:Number, z:Number):Point {
+			return Scene.translateCoords(x, y, z);
 		}
 		
 		/**
@@ -733,19 +747,19 @@ package com.ice.core.base {
 		 *
 		 * @return A Coordinate in the Stage
 		 */
-		public function translate3DCoordsToStageCoords(x:Number,y:Number,z:Number):Point {
+		public function translate3DCoordsToStageCoords(x:Number, y:Number, z:Number):Point {
 			
 			//Get offset of camera
-			var rect:Rectangle = this.container.scrollRect
+			var rect:Rectangle = this.container.scrollRect;
 			
 			// Get point
-			var r:Point = Scene.translateCoords(x,y,z)
+			var r:Point = Scene.translateCoords(x, y, z);
 			
 			// Translate
-			r.x-=rect.x
-			r.y-=rect.y
+			r.x -= rect.x;
+			r.y -= rect.y;
 			
-			return r
+			return r;
 		}
 		
 		/**
@@ -766,14 +780,14 @@ package com.ice.core.base {
 		 * @return A Point in the scene's coordinate system. Please note that a Z value is not returned as It can't be calculated from a 2D input.
 		 * The returned x and y correspond to z=0 in the game's coordinate system.
 		 */
-		public function translateStageCoordsTo3DCoords(x:Number,y:Number):Point {
+		public function translateStageCoordsTo3DCoords(x:Number, y:Number):Point {
 			
 			//get offset of camera
-			var rect:Rectangle = this.container.scrollRect
-			var xx:Number = x+rect.x
-			var yy:Number = y+rect.y
+			var rect:Rectangle = this.container.scrollRect;
+			var xx:Number = x + rect.x;
+			var yy:Number = y + rect.y;
 			
-			return Scene.translateCoordsInverse(xx,yy)
+			return Scene.translateCoordsInverse(xx, yy);
 		}
 		
 		
@@ -793,12 +807,13 @@ package com.ice.core.base {
 		 *
 		 * @see org.ffilmation.engine.datatypes.fCoordinateOccupant
 		 */
-		public function translateStageCoordsToElements(x:Number,y:Number):Array {
+		public function translateStageCoordsToElements(x:Number, y:Number):Array {
 			
 			// This must be passed to the renderer because we have no idea how things are drawn
-			if(this.IAmBeingRendered) return this.renderEngine.translateStageCoordsToElements(x,y)
-			else return null
-			
+			if(this.IAmBeingRendered) 
+				return this.renderEngine.translateStageCoordsToElements(x, y);
+			else
+				return null;
 		}
 		
 		/**
@@ -807,11 +822,12 @@ package com.ice.core.base {
 		public function render():void {
 			
 			// Render global light
-			this.environmentLight.render()
+			this.environmentLight.render();
 			
 			// Render dynamic lights
-			var ll:int = this.lights.length
-			for(var i:int=0;i<ll;i++) this.lights[i].render()
+			var ll:int = this.lights.length;
+			for(var i:int = 0; i < ll; i++) 
+				this.lights[i].render();
 			
 		}
 		
@@ -823,41 +839,46 @@ package com.ice.core.base {
 		 */
 		public function startRendering():void {
 			
-			if(this.IAmBeingRendered) return
-				
-				// Init render engine
-				this.renderEngine.initialize()
+			if(this.IAmBeingRendered)
+				return;
+			
+			// Init render engine
+			this.renderEngine.initialize();
 			
 			// Init render manager
-			this.renderManager.initialize()
+			this.renderManager.initialize();
 			
 			// Init render for all elements
-			var jl:int = this.floors.length
-			for(var j:int=0;j<jl;j++) this.addElementToRenderEngine(this.floors[j])
-			jl = this.walls.length
-			for(j=0;j<jl;j++) this.addElementToRenderEngine(this.walls[j])
-			jl = this.objects.length
-			for(j=0;j<jl;j++) this.addElementToRenderEngine(this.objects[j])
-			jl = this.characters.length
-			for(j=0;j<jl;j++) this.addElementToRenderEngine(this.characters[j])
-			jl = this.emptySprites.length
-			for(j=0;j<jl;j++) this.addElementToRenderEngine(this.emptySprites[j])
-			jl = this.bullets.length
-			for(j=0;j<jl;j++) {
-				this.addElementToRenderEngine(this.bullets[j])
-				this.bullets[j].customData.bulletRenderer.init()
+			var len:int = this.floors.length;
+			for(var j:int = 0; j < len; j++)
+				this.addElementToRenderEngine(this.floors[j]);
+			len = this.walls.length;
+			for(j = 0; j < len; j++) 
+				this.addElementToRenderEngine(this.walls[j]);
+			len = this.objects.length;
+			for(j = 0; j < len; j++)
+				this.addElementToRenderEngine(this.objects[j]);
+			len = this.characters.length;
+			for(j = 0; j < len; j++) 
+				this.addElementToRenderEngine(this.characters[j]);
+			len = this.emptySprites.length;
+			for(j = 0; j < len; j++) 
+				this.addElementToRenderEngine(this.emptySprites[j]);
+			len = this.bullets.length;
+			for(j = 0; j < len; j++) {
+				this.addElementToRenderEngine(this.bullets[j]);
+				this.bullets[j].customData.bulletRenderer.init();
 			}
 			
 			// Set flag
-			this.IAmBeingRendered = true
+			this.IAmBeingRendered = true;
 			
 			// Render scene
-			this.render()
+			this.render();
 			
 			// Update camera if any
-			if(this.currentCamera) this.renderManager.processNewCellCamera(this.currentCamera)
-			
-			
+			if(this.currentCamera)
+				this.renderManager.processNewCellCamera(this.currentCamera);
 		}
 		
 		// PRIVATE AND INTERNAL METHODS FOLLOW
@@ -870,61 +891,61 @@ package com.ice.core.base {
 		private function addElementToRenderEngine(element:RenderableElement) {
 			
 			// Init
-			element.container = this.renderEngine.initRenderFor(element)
+			element.container = this.renderEngine.initRenderFor(element);
 			
 			// This happens only if the render Engine returns a container for every element. 
 			if(element.container) {
-				element.container.fElementId = element.id
-				element.container.fElement = element
+				element.container.elementId = element.id;
+				element.container.element = element;
 			}
 			
 			// This can be null, depending on the render engine
-			element.flashClip = this.renderEngine.getAssetFor(element)
+			element.flashClip = this.renderEngine.getAssetFor(element);
 			
 			// Listen to show and hide events
-			element.addEventListener(RenderableElement.SHOW,this.renderManager.showListener,false,0,true)
-			element.addEventListener(RenderableElement.HIDE,this.renderManager.hideListener,false,0,true)
-			element.addEventListener(RenderableElement.ENABLE,this.enableListener,false,0,true)
-			element.addEventListener(RenderableElement.DISABLE,this.disableListener,false,0,true)
+			element.addEventListener(RenderableElement.SHOW, this.renderManager.showListener, false, 0, true);
+			element.addEventListener(RenderableElement.HIDE, this.renderManager.hideListener, false, 0, true);
+			element.addEventListener(RenderableElement.ENABLE, this.enableListener, false, 0, true);
+			element.addEventListener(RenderableElement.DISABLE, this.disableListener, false, 0, true);
 			
 			// Add to render manager
-			this.renderManager.addedItem(element)
+			this.renderManager.addedItem(element);
 			
 			// Elements default to Mouse-disabled
-			element.disableMouseEvents()
+			element.disableMouseEvents();
 			
 		}
 		
 		/**
 		 * This method removes an element from the renderEngine pool
 		 */
-		private function removeElementFromRenderEngine(element:RenderableElement,destroyingScene:Boolean = false) {
+		private function removeElementFromRenderEngine(element:RenderableElement, destroyingScene:Boolean = false) {
 			
-			this.renderManager.removedItem(element,destroyingScene)
-			this.renderEngine.stopRenderFor(element)
+			this.renderManager.removedItem(element, destroyingScene);
+			this.renderEngine.stopRenderFor(element);
 			if(element.container) {
-				element.container.fElementId = null
-				element.container.fElement = null
+				element.container.elementId = null;
+				element.container.element = null;
 			}
-			element.container = null
-			element.flashClip = null
+			element.container = null;
+			element.flashClip = null;
 			
 			// Stop listening to show and hide events
-			element.removeEventListener(RenderableElement.SHOW,this.renderManager.showListener)
-			element.removeEventListener(RenderableElement.HIDE,this.renderManager.hideListener)
-			element.removeEventListener(RenderableElement.ENABLE,this.enableListener)
-			element.removeEventListener(RenderableElement.DISABLE,this.disableListener)
+			element.removeEventListener(RenderableElement.SHOW, this.renderManager.showListener);
+			element.removeEventListener(RenderableElement.HIDE, this.renderManager.hideListener);
+			element.removeEventListener(RenderableElement.ENABLE, this.enableListener);
+			element.removeEventListener(RenderableElement.DISABLE, this.disableListener);
 			
 		}
 		
 		// Listens to elements made enabled
 		private function enableListener(evt:Event):void {
-			this.renderEngine.enableElement(evt.target as RenderableElement)
+			this.renderEngine.enableElement(evt.target as RenderableElement);
 		}
 		
 		// Listens to elements made disabled
 		private function disableListener(evt:Event):void {
-			this.renderEngine.disableElement(evt.target as RenderableElement)
+			this.renderEngine.disableElement(evt.target as RenderableElement);
 		}
 		
 		/**
@@ -934,38 +955,43 @@ package com.ice.core.base {
 		public function stopRendering():void {
 			
 			// Stop render for all elements
-			var jl:int = jl
-			for(var j:int=0;j<jl;j++) this.removeElementFromRenderEngine(this.floors[j],true)
-			jl = this.walls.length
-			for(j=0;j<jl;j++) this.removeElementFromRenderEngine(this.walls[j],true)
-			jl = this.objects.length
-			for(j=0;j<jl;j++) this.removeElementFromRenderEngine(this.objects[j],true)
-			jl = this.characters.length
-			for(j=0;j<jl;j++) this.removeElementFromRenderEngine(this.characters[j],true)
-			jl = this.emptySprites.length
-			for(j=0;j<jl;j++) this.removeElementFromRenderEngine(this.emptySprites[j],true)
-			jl = this.bullets.length
-			for(j=0;j<jl;j++) {
-				this.bullets[j].customData.bulletRenderer.clear()
-				this.removeElementFromRenderEngine(this.bullets[j],true)
+			var len:int = len
+			for(var j:int = 0; j < len; j++) 
+				this.removeElementFromRenderEngine(this.floors[j], true);
+			len = this.walls.length;
+			for(j = 0; j < len; j++) 
+				this.removeElementFromRenderEngine(this.walls[j], true);
+			len = this.objects.length;
+			for(j = 0; j < len; j++) 
+				this.removeElementFromRenderEngine(this.objects[j], true);
+			len = this.characters.length;
+			for(j = 0; j < len; j++) 
+				this.removeElementFromRenderEngine(this.characters[j], true);
+			len = this.emptySprites.length;
+			for(j = 0; j < len; j++) 
+				this.removeElementFromRenderEngine(this.emptySprites[j], true);
+			len = this.bullets.length;
+			for(j = 0; j < len; j++) {
+				this.bullets[j].customData.bulletRenderer.clear();
+				this.removeElementFromRenderEngine(this.bullets[j], true);
 			}
 			
 			// Free bullet pool as the assets are no longer valid
-			jl = this.bulletPool.length
-			for(j=0;j<jl;j++) {
-				this.bulletPool[j].dispose()
-					delete this.bulletPool[j]
+			len = this.bulletPool.length
+			for(j=0; j < len; j++) {
+				this.bulletPool[j].dispose();
+				delete this.bulletPool[j];
 			}
-			this.bulletPool = new Array
+			this.bulletPool = [];
 			
 			// Stop render engine
-			this.renderEngine.dispose()
+			this.renderEngine.dispose();
 			
 			// Stop render manager
-			this.renderManager.dispose()
+			this.renderManager.dispose();
 			
 			// Set flag
-			this.IAmBeingRendered = false
+			this.IAmBeingRendered = false;
 			
 		}
 		
@@ -976,19 +1002,20 @@ package com.ice.core.base {
 			
 			if(this.IAmBeingRendered) {
 				
-				var light:OmniLight = evt.target as OmniLight
+				var light:OmniLight = evt.target as OmniLight;
 				
 				// Hide light from elements
-				var cell:fCell = light.cell
-				var nEl:Number = light.nElements
-				for(var i2:Number=0;i2<nEl;i2++) this.renderEngine.lightReset(light.elementsV[i2].obj,light)
+				var cell:Cell = light.cell;
+				var nEl:Number = light.nElements;
+				for(var i2:Number = 0; i2 < nEl; i2++) 
+					this.renderEngine.lightReset(light.elementsV[i2].obj, light);
 				
-				nEl = this.characters.length
-				for(i2=0;i2<nEl;i2++) this.renderEngine.lightReset(this.characters[i2],light)
+				nEl = this.characters.length;
+				for(i2 = 0; i2 < nEl; i2++) 
+					this.renderEngine.lightReset(this.characters[i2], light);
 				
-				LightSceneLogic.processNewLightDimensions(this,evt.target as OmniLight)
+				LightSceneLogic.processNewLightDimensions(this, evt.target as OmniLight);
 			}
-			
 		}
 		
 		// Element enters new cell
@@ -996,20 +1023,21 @@ package com.ice.core.base {
 		public function processNewCell(evt:Event):void {
 			
 			if(this.IAmBeingRendered) {
-				if(evt.target is OmniLight) LightSceneLogic.processNewCellOmniLight(this,evt.target as OmniLight)
+				if(evt.target is OmniLight)
+					LightSceneLogic.processNewCellOmniLight(this, evt.target as OmniLight);
 				if(evt.target is Character) {
-					var c:Character = evt.target as Character
-					this.renderManager.processNewCellCharacter(c)
-					CharacterSceneLogic.processNewCellCharacter(this,c)
+					var c:Character = evt.target as Character;
+					this.renderManager.processNewCellCharacter(c);
+					CharacterSceneLogic.processNewCellCharacter(this, c);
 				}
 				if(evt.target is EmptySprite) {
-					var e:EmptySprite = evt.target as EmptySprite
-					this.renderManager.processNewCellEmptySprite(e)
-					EmptySpriteSceneLogic.processNewCellEmptySprite(this,e)
+					var e:EmptySprite = evt.target as EmptySprite;
+					this.renderManager.processNewCellEmptySprite(e);
+					EmptySpriteSceneLogic.processNewCellEmptySprite(this, e);
 				}
 				if(evt.target is Bullet) {
-					var b:Bullet = evt.target as Bullet
-					this.renderManager.processNewCellBullet(b)
+					var b:Bullet = evt.target as Bullet;
+					this.renderManager.processNewCellBullet(b);
 				}
 			}
 			
@@ -1050,25 +1078,26 @@ package com.ice.core.base {
 		
 		
 		// Listens cameras moving
-		private function cameraMoveListener(evt:fMoveEvent):void {
-			this.followCamera(evt.target as Camera)
+		private function cameraMoveListener(evt:MoveEvent):void {
+			this.followCamera(evt.target as Camera);
 		}
 		
 		// Listens cameras changing cells.
 		private function cameraNewCellListener(evt:Event):void {
-			var camera:Camera = evt.target as Camera
-			this.renderEngine.setCameraPosition(camera)
-			if(this.IAmBeingRendered) this.renderManager.processNewCellCamera(camera)
+			var camera:Camera = evt.target as Camera;
+			this.renderEngine.setCameraPosition(camera);
+			if(this.IAmBeingRendered) 
+				this.renderManager.processNewCellCamera(camera);
 		}
 		
 		// Adjusts visualization to camera position
 		private function followCamera(camera:Camera):void {
 			if(this.prof) {
-				this.prof.begin( "Update camera")				
-				this.renderEngine.setCameraPosition(camera)
-				this.prof.end( "Update camera")				
+				this.prof.begin( "Update camera");				
+				this.renderEngine.setCameraPosition(camera);
+				this.prof.end( "Update camera");				
 			} else {
-				this.renderEngine.setCameraPosition(camera)
+				this.renderEngine.setCameraPosition(camera);
 			}
 		}
 		
@@ -1076,11 +1105,11 @@ package com.ice.core.base {
 		
 		// Returns a normalized zSort value for a cell in the grid. Bigger values display in front of lower values
 		/** @private */
-		public function computeZIndex(i:Number,j:Number,k:Number):Number {
-			var ow:int = this.gridWidth
-			var od:int = this.gridDepth
-			var oh:int = this.gridHeight
-			return ((((((ow-i+1)+(j*ow+2)))*oh)+k))/(ow*od*oh)
+		public function computeZIndex(i:Number, j:Number, k:Number):Number {
+			var ow:int = this.gridWidth;
+			var od:int = this.gridDepth;
+			var oh:int = this.gridHeight;
+			return ((((((ow - i + 1)+(j * ow + 2))) * oh) + k)) / (ow * od * oh);
 		}
 		
 		
@@ -1092,10 +1121,10 @@ package com.ice.core.base {
 		/** @private */
 		public function resetGrid():void {
 			
-			var l:int = this.allUsedCells.length
-			for(var i:int=0;i<l;i++) {
-				this.allUsedCells[i].characterShadowCache = new Array
-					delete this.allUsedCells[i].visibleObjs
+			var l:int = this.allUsedCells.length;
+			for(var i:int = 0; i < l; i++) {
+				this.allUsedCells[i].characterShadowCache = [];
+				delete this.allUsedCells[i].visibleObjs;
 			}
 			
 		}
@@ -1103,24 +1132,28 @@ package com.ice.core.base {
 		
 		// Returns the cell containing the given coordinates
 		/** @private */
-		public function translateToCell(x:Number,y:Number,z:Number):fCell {
-			if(x<0 || y<0 || z<0) return null
-			return this.getCellAt(x/this.gridSize,y/this.gridSize,z/this.levelSize)
+		public function translateToCell(x:Number, y:Number, z:Number):Cell {
+			if(x < 0 || y < 0 || z < 0) 
+				return null;
+			return this.getCellAt(x / this.gridSize, y / this.gridSize, z / this.levelSize);
 		}
 		
 		// Returns the cell at specific grid coordinates. If cell does not exist, it is created.
 		/** @private */
-		public function getCellAt(i:int,j:int,k:int) {
+		public function getCellAt(i:int, j:int, k:int):Cell {
 			
-			if(i<0 || j<0 || k<0) return null
-			if(i>=this.gridWidth || j>=this.gridDepth || k>=this.gridHeight) return null
+			if(i < 0 || j < 0 || k < 0) 
+				return null;
+			if(i >= this.gridWidth || j >= this.gridDepth || k >= this.gridHeight) 
+				return null;
 			
 			// Create new if necessary
-			if(!this.grid[i] || !this.grid[i][j]) return null
-			var arr:Array = this.grid[i][j]
+			if(!this.grid[i] || !this.grid[i][j]) 
+				return null;
+			var arr:Array = this.grid[i][j];
 			if(!arr[k]) {
 				
-				var cell:fCell = new fCell()
+				var cell:Cell = new Cell();
 				
 				// Z-Index
 				
@@ -1128,65 +1161,62 @@ package com.ice.core.base {
 				//cell.zIndex = this.computeZIndex(i,j,k)
 				
 				// Inline for a bit of speedup
-				var ow:int = this.gridWidth
-				var od:int = this.gridDepth
-				var oh:int = this.gridHeight
-				cell.zIndex =  ((((((ow-i+1)+(j*ow+2)))*oh)+k))/(ow*od*oh)
+				var ow:int = this.gridWidth;
+				var od:int = this.gridDepth;
+				var oh:int = this.gridHeight;
+				cell.zIndex =  ((((((ow - i + 1) + (j * ow + 2))) * oh) + k)) / (ow * od * oh);
 				
-				var s:Array = this.sortAreas[i]
+				var s:Array = this.sortAreas[i];
 				
 				//var s:Array = this.sortAreasRTree.intersects(new fCube(i,j,k,i+1,j+1,k+1))
 				
-				var l:int = s.length
+				var l:int = s.length;
 				
-				var found:Boolean = false
-				for(var n:int=0;!found && n<l;n++) {
+				var found:Boolean = false;
+				for(var n:int = 0; !found && n < l; n++) {
 					
 					/* Original call
 					if(s[n].isPointInside(i,j,k)) {
 					found = true
-					cell.zIndex+=(s[n] as fSortArea).zValue
+					cell.zIndex+=(s[n] as SortArea).zValue
 					}*/
 					
 					/* Inline for a bit of speedup */
-					var sA:fSortArea = s[n]
-					//var sA:fSortArea = this.sortAreas[s[n]]
-					if((i>=sA.i && i<=sA.i+sA.width) && (j>=sA.j && j<=sA.j+sA.depth) && (k>=sA.k && k<=sA.k+sA.height) ) {
+					var sA:SortArea = s[n];
+					//var sA:SortArea = this.sortAreas[s[n]]
+					if((i >= sA.i && i <= sA.i + sA.width) && (j >= sA.j && j <= sA.j + sA.depth) 
+						&& (k >= sA.k && k <= sA.k + sA.height) ) {
 						found = true
-						cell.zIndex+=sA.zValue
+						cell.zIndex += sA.zValue;
 					}
-					
 				}
 				
 				// Internal
-				cell.i = i
-				cell.j = j
-				cell.k = k
-				cell.x = (this.gridSize>>1)+(this.gridSize*i)
-				cell.y = (this.gridSize>>1)+(this.gridSize*j)
-				cell.z = (this.levelSize>>1)+(this.levelSize*k)
-				arr[k] = cell
+				cell.i = i;
+				cell.j = j;
+				cell.k = k;
+				cell.x = (this.gridSize >> 1)+(this.gridSize * i);
+				cell.y = (this.gridSize >> 1)+(this.gridSize * j);
+				cell.z = (this.levelSize >> 1)+(this.levelSize * k);
+				arr[k] = cell;
 				
-				this.allUsedCells[this.allUsedCells.length] = cell
-				
+				this.allUsedCells[this.allUsedCells.length] = cell;
 			}
-			
 			// Return cell
-			return this.grid[i][j][k]
-			
+			return this.grid[i][j][k];
 		}
 		
 		
 		/** @private */
-		public static function translateCoords(x:Number,y:Number,z:Number):Point {
+		public static function translateCoords(x:Number, y:Number, z:Number):Point {
 			
-			var xx:Number = x*Engine.DEFORMATION
-			var yy:Number = y*Engine.DEFORMATION
-			var zz:Number = z*Engine.DEFORMATION
-			var xCart:Number = (xx+yy)*0.8944271909999159			//Math.cos(0.4636476090008061)
-			var yCart:Number = zz+(xx-yy)*0.4472135954999579  	//Math.sin(0.4636476090008061)
+			var xx:Number = x * Engine.DEFORMATION;
+			var yy:Number = y * Engine.DEFORMATION;
+			var zz:Number = z * Engine.DEFORMATION;
+			var xCart:Number = (xx + yy) * 0.8944271909999159;			//Math.cos(0.4636476090008061)
+			var yCart:Number = zz + (xx - yy) * 0.4472135954999579;  	//Math.sin(0.4636476090008061)
 			
-			return new Point(xCart,-yCart) 
+			return new Point(xCart, -yCart); 
 			
 		}
 		
@@ -1198,27 +1228,27 @@ package com.ice.core.base {
 			var xCart:Number = (-1 * y / 0.4472135954999579 + x / 0.8944271909999159) >> 1;        
 			
 			//scale the coordinates
-			xCart = xCart/Engine.DEFORMATION
-			yCart = yCart/Engine.DEFORMATION
+			xCart = xCart / Engine.DEFORMATION;
+			yCart = yCart / Engine.DEFORMATION;
 			
-			return new Point(xCart,yCart)
+			return new Point(xCart, yCart);
 		}         
 		
 		
 		// Get elements affected by lights from given cell, sorted by distance
 		/** @private */
-		public function getAffectedByLight(cell:fCell,range:Number=Infinity):void {
-			var r:Array = fVisibilitySolver.calcAffectedByLight(this,cell.x,cell.y,cell.z,range)
-			cell.lightAffectedElements = r
-			cell.lightRange = range
+		public function getAffectedByLight(cell:Cell, range:Number = Infinity):void {
+			var r:Array = VisibilitySolver.calcAffectedByLight(this, cell.x, cell.y, cell.z, range);
+			cell.lightAffectedElements = r;
+			cell.lightRange = range;
 		}
 		
 		// Get elements visible from given cell, sorted by distance
 		/** @private */
-		public function getVisibles(cell:fCell,range:Number=Infinity):void {
-			var r:Array = fVisibilitySolver.calcVisibles(this,cell.x,cell.y,cell.z,range)
-			cell.visibleElements = r
-			cell.visibleRange = range
+		public function getVisibles(cell:Cell, range:Number = Infinity):void {
+			var r:Array = VisibilitySolver.calcVisibles(this, cell.x, cell.y, cell.z, range);
+			cell.visibleElements = r;
+			cell.visibleRange = range;
 		}
 		
 		
@@ -1230,92 +1260,97 @@ package com.ice.core.base {
 		public function dispose():void {
 			
 			// Free properties
-			this.engine = null
-			for(var i:int=0;i<this.sortAreas.length;i++) delete this.sortAreas[i]
-				this.sortAreas = null
-			this.sortAreasRTree = null
+			this.engine = null;
+			var len:int = this.sortAreas.length;
+			for(var i:int = 0; i < len; i++) 
+				delete this.sortAreas[i];
+			this.sortAreas = null;
+			this.sortAreasRTree = null;
 			
-			this.allStatic2D = null
-			this.allStatic2DRTree = null
+			this.allStatic2D = null;
+			this.allStatic2DRTree = null;
 			
-			this.allStatic3D = null
-			this.allStatic3DRTree = null
+			this.allStatic3D = null;
+			this.allStatic3DRTree = null;
 			
-			if(this.currentCamera) this.currentCamera.dispose()
-			this.currentCamera = null
-			this._controller = null
+			if(this.currentCamera) 
+				this.currentCamera.dispose();
+			this.currentCamera = null;
+			this._controller = null;
 			
 			// Stop current initialization, if any
-			if(this.initializer) this.initializer.dispose()
-			this.resourceManager = null
+			if(this.initializer) 
+				this.initializer.dispose();
+			this.resourceManager = null;
 			
 			// Free render engine
-			this.renderEngine.dispose()
+			this.renderEngine.dispose();
 			
 			// Free render manager
-			this.renderManager.dispose()
-			this.renderManager = null
+			this.renderManager.dispose();
+			this.renderManager = null;
 			
-			if(this._orig_container.parent) this._orig_container.parent.removeChild(this._orig_container)
-			this._orig_container = null
-			this.container = null
+			if(this._orig_container.parent) 
+				this._orig_container.parent.removeChild(this._orig_container);
+			this._orig_container = null;
+			this.container = null;
 			
 			// Free elements
-			var il:int = this.floors.length 
-			for(i=0;i<il;i++) {
-				this.floors[i].dispose()
-					delete this.floors[i]
+			var il:int = this.floors.length;
+			for(i = 0; i < il; i++) {
+				this.floors[i].dispose();
+				delete this.floors[i];
 			}
-			il = this.walls.length
-			for(i=0;i<il;i++) {
-				this.walls[i].dispose()
-					delete this.walls[i]
+			il = this.walls.length;
+			for(i = 0; i < il; i++) {
+				this.walls[i].dispose();
+				delete this.walls[i];
 			}
-			il = this.objects.length
-			for(i=0;i<il;i++) {
-				this.objects[i].dispose()
-					delete this.objects[i]
+			il = this.objects.length;
+			for(i = 0; i < il; i++) {
+				this.objects[i].dispose();
+				delete this.objects[i];
 			}
-			il = this.characters.length
-			for(i=0;i<il;i++) {
-				this.characters[i].dispose()
-					delete this.characters[i]
+			il = this.characters.length;
+			for(i = 0; i < il; i++) {
+				this.characters[i].dispose();
+				delete this.characters[i];
 			}
-			il = this.emptySprites.length
-			for(i=0;i<il;i++) {
-				this.emptySprites[i].dispose()
-					delete this.emptySprites[i]
+			il = this.emptySprites.length;
+			for(i = 0; i < il; i++) {
+				this.emptySprites[i].dispose();
+				delete this.emptySprites[i];
 			}
 			il = this.lights.length
-			for(i=0;i<il;i++) {
-				this.lights[i].dispose()
-					delete this.lights[i]
+			for(i = 0; i < il; i++) {
+				this.lights[i].dispose();
+				delete this.lights[i];
 			}
-			il = this.bullets.length
-			for(i=0;i<il;i++) {
-				this.bullets[i].dispose()
-					delete this.bullets[i]
+			il = this.bullets.length;
+			for(i = 0; i < il; i++) {
+				this.bullets[i].dispose();
+				delete this.bullets[i];
 			}
-			for(var n in this.all) delete this.all[n]
-				
-				this.floors = null       
-			this.walls = null      
-			this.objects = null      
-			this.characters = null     
-			this.emptySprites = null    
-			this.events = null  
-			this.lights = null  
-			this.everything = null       
-			this.all = null  
-			this.bullets = null   
-			this.bulletPool = null  
+			for(var n in this.all)
+				delete this.all[n];
+			
+			this.floors = null;       
+			this.walls = null;      
+			this.objects = null;     
+			this.characters = null;    
+			this.emptySprites = null;
+			this.events = null;  
+			this.lights = null; 
+			this.everything = null;       
+			this.all = null;
+			this.bullets = null;   
+			this.bulletPool = null;  
 			
 			// Free grid
-			this.freeGrid()
+			this.freeGrid();
 			
 			// Free materials
-			Material.disposeMaterials(this)
-			
+			Material.disposeMaterials(this);
 		}
 		
 		/**
@@ -1323,17 +1358,13 @@ package com.ice.core.base {
 		 */
 		private function freeGrid():void {
 			
-			var l:int = this.allUsedCells.length
-			for(var i:int=0;i<l;i++) this.allUsedCells[i].dispose()
-			this.grid = null
-			this.allUsedCells = null
+			var l:int = this.allUsedCells.length;
+			for(var i:int = 0; i < l; i++) 
+				this.allUsedCells[i].dispose();
+			this.grid = null;
+			this.allUsedCells = null;
 			
 		}
-		
-		
-		
 	}
-	
-	
 }
 

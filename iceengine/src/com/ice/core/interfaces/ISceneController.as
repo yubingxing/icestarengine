@@ -20,6 +20,6 @@ package com.ice.core.interfaces {
 		 * This is used to enable/disable the controller. In complex applications, you will want to enable / disable controllers as you enter / leave scenes,
 		 * when you trigger a cutscene, pause your game, go to the Options menu, etc etc
 		 */
-		function set enable(value:Boolean):void;
+		function set enabled(value:Boolean):void;
 	}
 }

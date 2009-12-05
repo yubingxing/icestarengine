@@ -2,7 +2,7 @@
  * bullet render interface 
  */
 package com.ice.core.interfaces {
-	import com.ice.core.RenderableElement;
+	import com.ice.core.base.RenderableElement;
 	import com.ice.core.elements.Bullet;
 	
 	import flash.display.MovieClip;

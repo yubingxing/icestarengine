@@ -4,12 +4,12 @@
 package com.ice.core.base {
 	import com.ice.core.events.MoveEvent;
 	import com.ice.core.interfaces.IElementController;
+	import com.ice.util.MathUtils;
 	import com.ice.util.ds.Cell;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
-	import org.ffilmation.utils.MathUtils;
 	
 	// Imports
 	
@@ -172,7 +172,7 @@ package com.ice.core.base {
 		 */
 		public function set controller(controller:IElementController):void {
 			if(this._controller!=null) 
-				this._controller.disable();
+				this._controller.enabled = false;
 			this._controller = controller;
 			if(this._controller) 
 				this._controller.assignElement(this);
@@ -228,7 +228,7 @@ package com.ice.core.base {
 		 * @param _elasticity: How strong is the element attached to what is following. 0 Means a solid bind. The bigger the number, the looser the bind.
 		 *
 		 */
-		public function follow(target:MovingElement, _elasticity:Number=0):void {
+		public function follow(target:MovingElement, _elasticity:Number = 0):void {
 			_offX = target.x - this.x;
 			_offY = target.y - this.y;	
 			_offZ = target.z - this.z;

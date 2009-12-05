@@ -2,8 +2,8 @@
  * base line bullet element class
  */
 package com.ice.core.bullet {
-	import com.ice.core.Plane;
-	import com.ice.core.RenderableElement;
+	import com.ice.core.base.Plane;
+	import com.ice.core.base.RenderableElement;
 	import com.ice.core.elements.BaseElement;
 	import com.ice.core.elements.Bullet;
 	import com.ice.core.elements.Character;

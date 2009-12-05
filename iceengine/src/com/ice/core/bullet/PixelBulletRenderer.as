@@ -2,12 +2,11 @@
  * base pixel bullet element class
  */
 package com.ice.core.bullet {
+	import com.ice.core.elements.BaseElement;
 	import com.ice.core.elements.Bullet;
 	import com.ice.core.elements.Character;
-	import com.ice.core.elements.BaseElement;
-	import com.ice.core.Plane;
-	import com.ice.core.RenderableElement;
 	import com.ice.core.interfaces.IBulletRenderer;
+	import com.ice.util.ObjectPool;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -85,7 +84,7 @@ package com.ice.core.bullet {
 					clase = getDefinitionByName(this.characterRicochetDefinition) as Class;
 				else if(element is BaseElement) 
 					clase = getDefinitionByName(this.objectRicochetDefinition) as Class;
-				return objectPool.getInstanceOf(clase) as MovieClip;
+				return ObjectPool.getInstanceOf(clase) as MovieClip;
 			} catch(e:Error) {
 				return null;
 			}

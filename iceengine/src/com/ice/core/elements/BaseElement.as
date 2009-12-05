@@ -6,6 +6,7 @@ package com.ice.core.elements {
 	import com.ice.core.logic.collision.models.ICollisionModel;
 	import com.ice.helpers.ObjectDefinition;
 	import com.ice.helpers.SpriteDefinition;
+	import com.ice.util.MathUtils;
 	import com.ice.util.ObjectPool;
 	import com.ice.util.ds.Cell;
 	
@@ -180,7 +181,7 @@ package com.ice.core.elements {
 			this.y1 = this.y + this.radius;
 			
 			var clase:Class = this.sprites[0].sprite as Class;
-			var tempSprite:MovieClip = objectPool.getInstanceOf(clase) as MovieClip;
+			var tempSprite:MovieClip = ObjectPool.getInstanceOf(clase) as MovieClip;
 			var w:Number = tempSprite.width;
 			var h:Number = tempSprite.height;
 			this.bounds2d = new Rectangle(-(w >> 1), -h, w, h);
@@ -199,8 +200,8 @@ package com.ice.core.elements {
 		
 		/** @private */
 		public override function distanceTo(x:Number, y:Number, z:Number):Number {
-			var n1:Number = mathUtils.distance3d(x, y, z, this.x, this.y, this.z);
-			var n2:Number = mathUtils.distance3d(x, y, z, this.x, this.y, this.top);
+			var n1:Number = MathUtils.distance3d(x, y, z, this.x, this.y, this.z);
+			var n2:Number = MathUtils.distance3d(x, y, z, this.x, this.y, this.top);
 			
 			return (n1 < n2) ? n1 : n2;
 		}

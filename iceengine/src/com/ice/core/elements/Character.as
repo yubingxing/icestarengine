@@ -1,5 +1,15 @@
 // Character class
 package com.ice.core.elements {
+	import com.ice.core.base.Light;
+	import com.ice.core.base.MovingElement;
+	import com.ice.core.base.Scene;
+	import com.ice.core.events.CollideEvent;
+	import com.ice.core.events.MoveEvent;
+	import com.ice.core.events.MoveInEvent;
+	import com.ice.core.events.ProcessEvent;
+	import com.ice.core.interfaces.IMovingElement;
+	import com.ice.core.logic.collision.CollisionSolver;
+	import com.ice.util.ds.Cell;
 	
 	// Imports
 	
@@ -23,10 +33,10 @@ package com.ice.core.elements {
 	 * <p>YOU CAN'T CREATE INSTANCES OF THIS ELEMENT DIRECTLY.<br>
 	 * Use scene.createCharacter() to add new characters to an scene.</p>
 	 *
-	 * @see org.ffilmation.engine.core.fScene#createCharacter()
+	 * @see org.ffilmation.engine.core.Scene#createCharacter()
 	 *
 	 */
-	public class Character extends BaseElement implements MovingElement {
+	public class Character extends MovingElement implements IMovingElement {
 		
 		// Constants
 		
@@ -37,7 +47,7 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType charactercollide
 		 */
-		public static const COLLIDE:String = "charactercollide"
+		public static const COLLIDE:String = "charactercollide";
 		
 		/**
 		 * The fCharacter.WALKOVER constant defines the value of the 
@@ -46,7 +56,7 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType characterwalkover
 		 */
-		public static const WALKOVER:String = "characterwalkover"
+		public static const WALKOVER:String = "characterwalkover";
 		
 		/**
 		 * The fCharacter.EVENT_IN constant defines the value of the 
@@ -55,7 +65,7 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType charactereventin
 		 */
-		public static const EVENT_IN:String = "charactereventin"
+		public static const EVENT_IN:String = "charactereventin";
 		
 		/**
 		 * The fCharacter.EVENT_OUT constant defines the value of the 
@@ -64,7 +74,7 @@ package com.ice.core.elements {
 		 * 
 		 * @eventType charactereventout
 		 */
-		public static const EVENT_OUT:String = "charactereventout"
+		public static const EVENT_OUT:String = "charactereventout";
 		
 		
 		// Public properties
@@ -73,7 +83,7 @@ package com.ice.core.elements {
 		 * This value goes from 0 to 100 and indicates the alpha strenght of the "hole" that is opened in planes that cover this character
 		 * "Cover" means literally, onscreen. This allows you to see what you are doing behind a wall. The default "100" value disables this effect
 		 */
-		public var occlusion:Number = 100
+		public var occlusion:Number = 100;
 		
 		// Private properties
 		
@@ -81,51 +91,52 @@ package com.ice.core.elements {
 		 * Elements currently being occluded by this character
 		 * @private
 		 */
-		public var currentOccluding:Array
+		public var currentOccluding:Array;
 		
 		/** 
 		 * Numeric counter for fast Array lookups
 		 * @private
 		 */
-		public var counter:int
+		public var counter:int;
 		
 		/** 
 		 * Array of render cache. For each light in the scene, a list of elements that are shadowed by this character at its current position
 		 * @private
 		 */
-		public var vLights:Array
+		public var vLights:Array;
 		
 		/**
 		 * Array of cells the character occupies
 		 * @private
 		 */
-		public var occupiedCells:Array
+		public var occupiedCells:Array;
 		
 		
 		// Constructor
 		/** @private */
-		function Character(defObj:XML,scene:fScene):void {
+		function Character(defObj:XML, scene:Scene):void {
 			
 			// Previous
-			super(defObj,scene)
+			super(defObj, scene);
 			
 			// Characters are animated always
-			this.animated = true
+			this.animated = true;
 			
 			// Lights
-			this.vLights = new Array
+			this.vLights = [];
 			
 			// Occlusion
-			this.currentOccluding = new Array
+			this.currentOccluding = [];
 			
 			// Counter
-			this.counter = this.scene.characters.length
+			this.counter = this.scene.characters.length;
 			
 			// Occupied cells
-			this.occupiedCells = new Array
-			if(!this.scene.ready) this.scene.addEventListener(fScene.LOADCOMPLETE, this.onSceneLoaded,false,0,true)
-			else this.updateOccupiedCells()
-			
+			this.occupiedCells = [];
+			if(!this.scene.ready)
+				this.scene.addEventListener(Scene.LOADCOMPLETE, this.onSceneLoaded, false, 0, true);
+			else
+				this.updateOccupiedCells();
 		}
 		
 		
@@ -139,11 +150,11 @@ package com.ice.core.elements {
 		 * @param z: New z coordinate
 		 *
 		 */
-		public function teleportTo(x:Number,y:Number,z:Number):void {
-			var s:Boolean = this.solid
-			this.solid = false
-			this.moveTo(x,y,z)
-			this.solid = s
+		public function teleportTo(x:Number, y:Number, z:Number):void {
+			var s:Boolean = this.solid;
+			this.solid = false;
+			this.moveTo(x, y, z);
+			this.solid = s;
 		}
 		
 		
@@ -158,19 +169,20 @@ package com.ice.core.elements {
 		*
 		*/
 		/** @private */
-		public override function moveTo(x:Number,y:Number,z:Number):void {
+		public override function moveTo(x:Number, y:Number, z:Number):void {
 			
 			// Last position
-			var lx:Number = this.x
-			var ly:Number = this.y
-			var lz:Number = this.z
+			var lx:Number = this.x;
+			var ly:Number = this.y;
+			var lz:Number = this.z;
 			
 			// Movement
-			var dx:Number = x-lx
-			var dy:Number = y-ly
-			var dz:Number = z-lz
+			var dx:Number = x - lx;
+			var dy:Number = y - ly;
+			var dz:Number = z - lz;
 			
-			if(dx==0 && dy==0 && dz==0) return
+			if(dx == 0 && dy == 0 && dz == 0) 
+				return
 			
 			try {
 				
@@ -179,18 +191,19 @@ package com.ice.core.elements {
 				this.y = y
 				this.z = z
 				
-				var radius:Number = this.radius
-				var height:Number = this.height
+				var radius:Number = this.radius;
+				var height:Number = this.height;
 				
-				this.top = this.z+height
+				this.top = this.z + height;
 				
 				// Check for collisions against other fRenderableElements.
 				// collisionSolver.solveCharacterCollisions() tests a character's collisions at its current position, generates collision events (if any)
 				// and moves the character into a valid position if necessary.
-				if(this.solid) fCollisionSolver.solveCharacterCollisions(this,dx,dy,dz)
+				if(this.solid) 
+					CollisionSolver.solveCharacterCollisions(this, dx, dy, dz);
 				
 				// Check if element moved into a different cell
-				var cell:fCell = this.scene.translateToCell(this.x,this.y,this.z)
+				var cell:Cell = this.scene.translateToCell(this.x,this.y,this.z)
 				
 				if(cell!=this.cell || this.cell == null) {
 					
@@ -203,122 +216,122 @@ package com.ice.core.elements {
 						}
 					}
 					
-					var lastCell:fCell = this.cell
-					this.cell = cell
-					this.updateOccupiedCells()
-					dispatchEvent(new Event(fElement.NEWCELL))
+					var lastCell:Cell = this.cell;
+					this.cell = cell;
+					this.updateOccupiedCells();
+					dispatchEvent(new Event(MovingElement.NEWCELL))
 					
 					// Check for XML events in new cell
-					if(this.cell!=null && lastCell!=null) {
-						k = this.cell.events.length
-						for(i=0;i<k;i++) {
-							evt = this.cell.events[i]
-							if(lastCell.events.indexOf(evt)<0) dispatchEvent(new fEventIn(Character.EVENT_IN,evt.name,evt.xml))
+					if(this.cell != null && lastCell != null) {
+						k = this.cell.events.length;
+						for(i = 0; i < k; i++) {
+							evt = this.cell.events[i];
+							if(lastCell.events.indexOf(evt)<0) 
+								dispatchEvent(new MoveInEvent(Character.EVENT_IN, evt.name, evt.xml));
 						}
 					}
-					
 				}
 				
 				// Dispatch move event
-				if(this.x!=lx || this.y!=ly || this.z!=lz) dispatchEvent(new fMoveEvent(fElement.MOVE,this.x-lx,this.y-ly,this.z-lz))
+				if(this.x != lx || this.y != ly || this.z != lz) 
+					dispatchEvent(new MoveEvent(MovingElement.MOVE, this.x - lx, this.y - ly, this.z - lz));
 				
 			} catch(e:Error) {
-				
 				// This means we tried to move outside scene limits
-				this.x = lx
-				this.y = ly
-				this.z = lz
-				dispatchEvent(new fCollideEvent(Character.COLLIDE,null))
-				
+				this.x = lx;
+				this.y = ly;
+				this.z = lz;
+				dispatchEvent(new CollideEvent(Character.COLLIDE, null));
 			}
-			
 		}
 		
 		/** @private */
 		public function disposeCharacter():void {
 			
-			var ll:int = this.scene.lights.length
-			for(var j:int=0;j<ll;j++) {
-				var light:fLight = this.scene.lights[j]
-				if(light) light.vCharacters[this.counter] = null
+			var ll:int = this.scene.lights.length;
+			for(var j:int = 0; j < ll; j++) {
+				var light:Light = this.scene.lights[j];
+				if(light)
+					light.vCharacters[this.counter] = null;
 			}
 			
-			for(var i in this.vLights) delete this.vLights[i]
-				ll = this.currentOccluding.length
-			for(i=0;i<ll;i++) delete this.currentOccluding[i]
-				this.currentOccluding = null
-			this.vLights = null
+			for(var i in this.vLights) 
+				delete this.vLights[i];
+			ll = this.currentOccluding.length;
+			for(i = 0; i < ll; i++) 
+				delete this.currentOccluding[i];
+			this.currentOccluding = null;
+			this.vLights = null;
 			
 			// Clear out the old cells
-			this.clearOccupiedCells()
+			this.clearOccupiedCells();
 			
-			this.disposeObject()
+			this.disposeObject();
 			
 		}
 		
 		/** @private */
 		public override function dispose():void {
-			this.disposeCharacter()
+			this.disposeCharacter();
 		}		
 		
-		private function onSceneLoaded(evt:fProcessEvent):void {
-			this.updateOccupiedCells()
+		private function onSceneLoaded(evt:ProcessEvent):void {
+			this.updateOccupiedCells();
 		}
 		
 		// Assigns a new list of occupied cells to this character. Thnx to Alex Stone
 		private function updateOccupiedCells():void {
 			
 			// Retrieve new list of occupied cells
-			var theCell:fCell = this.scene.translateToCell(this.x,this.y,this.z)
-			var cells:Array = new Array
-			var cellRadius:int = int((this.radius / this.scene.gridSize)+0.5)
+			var theCell:Cell = this.scene.translateToCell(this.x, this.y, this.z);
+			var cells:Array = [];
+			var cellRadius:int = int((this.radius / this.scene.gridSize) + 0.5);
 			
 			// Loop ranges
-			var i1:int = theCell.i-cellRadius
-			if(i1<0) i1=0
-			var i2:int = theCell.i+cellRadius
-			var j1:int = theCell.j-cellRadius
-			if(j1<0) i1=0
-			var j2:int = theCell.j+cellRadius
-			var k2:Number = (this.top/this.scene.levelSize)
+			var i1:int = theCell.i - cellRadius;
+			if(i1 < 0)
+				i1 = 0;
+			var i2:int = theCell.i + cellRadius;
+			var j1:int = theCell.j - cellRadius;
+			if(j1 < 0) 
+				i1 = 0;
+			var j2:int = theCell.j + cellRadius;
+			var k2:Number = (this.top / this.scene.levelSize);
 			
-			for(var i:int = i1;i<=i2;i++) {
-				for(var j:int = j1;j<=j2;j++) {
-					for(var k:int = theCell.k;k<=k2;k++) {
-						var newCell:fCell = this.scene.getCellAt(i,j,k)
-						if(newCell) cells[cells.length] = newCell
+			for(var i:int = i1; i <= i2; i++) {
+				for(var j:int = j1; j <= j2; j++) {
+					for(var k:int = theCell.k; k <= k2; k++) {
+						var newCell:Cell = this.scene.getCellAt(i,j,k);
+						if(newCell) 
+							cells[cells.length] = newCell;
 					}
 				}
 			}
 			
 			// Clear out the old cells
-			this.clearOccupiedCells()
+			this.clearOccupiedCells();
 			
 			// Update new cells
-			this.occupiedCells = cells
+			this.occupiedCells = cells;
 			var forEach:Function = function(item:*, index:int, array:Array) {
-				item.charactersOccupying[item.charactersOccupying.length] = this
+				item.charactersOccupying[item.charactersOccupying.length] = this;
 			}
-			this.occupiedCells.forEach(forEach, this)
+			this.occupiedCells.forEach(forEach, this);
 		}
 		
 		private function clearOccupiedCells():void {
 			
 			var filter:Function = function(item:*, index:int, array:Array) {
 				if(item == this) {
-					return false
+					return false;
 				}
-				return true
+				return true;
 			}
 			var forEach:Function  = function(item:*, index:int, array:Array) {
-				item.charactersOccupying.filter(filter,this)
+				item.charactersOccupying.filter(filter, this);
 			}
-			this.occupiedCells.forEach(forEach, this)
-			this.occupiedCells = null
-			
+			this.occupiedCells.forEach(forEach, this);
+			this.occupiedCells = null;
 		}
-		
-		
 	}	
-	
 }

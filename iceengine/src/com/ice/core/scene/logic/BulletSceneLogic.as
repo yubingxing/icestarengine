@@ -1,5 +1,10 @@
 // BULLET LOGIC
 package com.ice.core.scene.logic {
+	import com.ice.core.base.ElementContainer;
+	import com.ice.core.elements.Bullet;
+	
+	import flash.display.MovieClip;
+	import flash.events.Event;
 	
 	
 	// Imports
@@ -13,7 +18,7 @@ package com.ice.core.scene.logic {
 		
 		
 		// Main render method for bullets
-		public static function renderBullet(scene:fScene,bullet:fBullet):void {
+		public static function renderBullet(scene:fScene,bullet:Bullet):void {
 			
 			// Move character to its new position
 			scene.renderEngine.updateBulletPosition(bullet)
@@ -26,7 +31,7 @@ package com.ice.core.scene.logic {
 		public static function processShot(evt:fShotEvent):void {
 			
 			// A bullet shots something. Is there a ricochet defined ?
-			var b:fBullet = evt.bullet
+			var b:Bullet = evt.bullet
 			var r:MovieClip = b.customData.bulletRenderer.getRicochet(evt.element)
 			
 			if(r) {
@@ -53,7 +58,7 @@ package com.ice.core.scene.logic {
 					
 				}
 				
-			} else b.scene.removeBullet(b)
+			} else b.scene.removeBullet(b);
 			
 		}
 		
@@ -61,20 +66,15 @@ package com.ice.core.scene.logic {
 		// Waits for a ricochet to end
 		public static function waitForRicochet(evt:Event):void {
 			
-			var ricochet:MovieClip = evt.target as MovieClip
+			var ricochet:MovieClip = evt.target as MovieClip;
 			if(ricochet.currentFrame==ricochet.totalFrames) {
-				ricochet.removeEventListener(Event.ENTER_FRAME,BulletSceneLogic.waitForRicochet)
-				var m:fElementContainer = ricochet.parent as fElementContainer
-				var bullet:fBullet = m.fElement as fBullet
-				ricochet.parent.removeChild(ricochet)
-				objectPool.returnInstance(ricochet)
-				bullet.scene.removeBullet(bullet)
-			}
-			
+				ricochet.removeEventListener(Event.ENTER_FRAME, BulletSceneLogic.waitForRicochet();
+					var m:ElementContainer = ricochet.parent as ElementContainer;
+					var bullet:Bullet = m.element as Bullet;
+					ricochet.parent.removeChild(ricochet);
+					objectPool.returnInstance(ricochet);
+					bullet.scene.removeBullet(bullet);
+					}
 		}
-		
-		
-		
 	}
-	
 }

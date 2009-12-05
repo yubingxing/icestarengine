@@ -145,19 +145,16 @@ package com.ice.core.elements {
 		
 		// Bullets control themselves
 		/** @private */
-		public function enable():void {
-			this.scene.container.addEventListener(Event.ENTER_FRAME, this.control, false, 0, true);
-		}
-		
-		// Bullets control themselves
-		/** @private */
-		public function disable():void {
-			this.scene.container.removeEventListener(Event.ENTER_FRAME, this.control);
+		public function set enabled(value:Boolean):void {
+			if(value)
+				this.scene.container.addEventListener(Event.ENTER_FRAME, this.control, false, 0, true);
+			else
+				this.scene.container.removeEventListener(Event.ENTER_FRAME, this.control);
 		}
 		
 		/** @private */
 		public function disposeBullet():void {
-			this.disable();
+			this.enabled = false;
 			this.disposeRenderable();
 		}
 		
